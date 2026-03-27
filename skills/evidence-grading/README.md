@@ -2,7 +2,12 @@
 
 Evidence calibration layer for downstream writing.
 
-This skill reads authority-aware metadata but does not equate venue prestige with evidence strength. It writes `evidence_score`, `evidence_label`, and caution flags such as `high_authority_low_evidence`.
+This skill reads authority-aware metadata but does not equate venue prestige with evidence strength. It writes:
+- `evidence_score`
+- `evidence_label`
+- caution flags such as `high_authority_low_evidence`
+
+It should usually be followed by a second `authority-ranking` pass so `final_score` and `selection_bucket` reflect the new evidence score.
 
 ```bash
 python skills/evidence-grading/scripts/grade_evidence.py \

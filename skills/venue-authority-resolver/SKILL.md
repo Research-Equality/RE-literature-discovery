@@ -1,6 +1,6 @@
 ---
 name: venue-authority-resolver
-description: Resolve venue authority metadata such as venue_type, peer_reviewed, preprint status, CCF rank, and journal metrics before final ranking. Use after search/merge/triage and before authority-ranking.
+description: Resolve auditable venue authority metadata such as venue_type, peer_reviewed, CCF rank, and journal metrics before final ranking. Use after search/merge/triage and before paper-quality-filter or authority-ranking.
 argument-hint: [paper-db]
 ---
 
@@ -11,9 +11,9 @@ Use this skill to enrich paper metadata without assigning final scores.
 ## Responsibilities
 
 - normalize venue metadata into the shared paper schema
-- call CCF and journal metrics resolvers
-- mark preprints and peer-reviewed venues consistently
-- add authority-related flags for downstream ranking and writing
+- call the CCF and journal metric resolvers
+- write shared audit fields such as `source_of_truth`, `resolved_from`, and `match_confidence`
+- add authority-related caution flags for downstream ranking and writing
 
 ## Do Not Use This Skill For
 

@@ -1,8 +1,8 @@
 # authority-ranking examples
 
-Use the offline sample workflow in [`/Users/mingxinyang/Documents/GitHub/RE-literature-discovery/examples/authority-aware-minimal/README.md`](/Users/mingxinyang/Documents/GitHub/RE-literature-discovery/examples/authority-aware-minimal/README.md).
+Use the end-to-end example in [`/Users/mingxinyang/Documents/GitHub/RE-literature-discovery/examples/authority-aware-minimal/README.md`](/Users/mingxinyang/Documents/GitHub/RE-literature-discovery/examples/authority-aware-minimal/README.md).
 
-Minimal standalone command:
+Standalone command:
 
 ```bash
 python skills/authority-ranking/scripts/rank_papers.py \

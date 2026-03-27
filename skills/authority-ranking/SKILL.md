@@ -1,36 +1,33 @@
 ---
 name: authority-ranking
-description: Compute the repository's single authority-aware final_score and selection_bucket for papers after search, merge, and metadata enrichment. Use when ranking a corpus for review writing, systematic review curation, or downstream section drafting.
+description: Compute the repository's single auditable authority-aware final_score and selection_bucket after metadata enrichment. Use when ranking a corpus for review writing or systematic review curation, and when you need explainable score components and analysis artifacts.
 argument-hint: [paper-db]
 ---
 
 # Authority Ranking
 
-This skill is the only final ranking layer in the repository.
+This is the only final ranking layer in the repository.
 
-## Use This Skill For
+## Responsibilities
 
-- writing `final_score`
-- assigning `selection_bucket`
-- combining relevance, authority, citation, recency, and optional evidence metadata
-- producing the canonical ranked `paper_db.jsonl`
-
-## Do Not Use This Skill For
-
-- raw search over external databases
-- resolving venue metadata such as CCF or journal quartiles
-- treating venue prestige as evidence strength
+- write `final_score`
+- assign `selection_bucket`
+- write `authority_reason`
+- write `ranking_components`
+- write `ranking_profile`
+- emit `ranking_report.md`
+- emit `resolution_audit.jsonl`
 
 ## Inputs
 
-- `outputs/<topic-slug>/paper_db.raw.jsonl`
-- `outputs/<topic-slug>/paper_db.triaged.jsonl`
-- optional evidence-enriched JSONL
+- authority-enriched `paper_db.authority.jsonl`
+- optional evidence-enriched corpus
 
 ## Outputs
 
 - `outputs/<topic-slug>/paper_db.jsonl`
-- optional `outputs/<topic-slug>/analysis/ranking_summary.md`
+- `outputs/<topic-slug>/analysis/ranking_report.md`
+- `outputs/<topic-slug>/analysis/resolution_audit.jsonl`
 
 ## Script
 
@@ -42,7 +39,7 @@ python skills/authority-ranking/scripts/rank_papers.py \
   --profile cs
 ```
 
-If `evidence_score` is missing, the script uses the profile's fallback evidence value. Re-run it after `evidence-grading` when you want refreshed final scores.
+If `evidence_score` is missing, the script uses the profile fallback. Re-run it after `evidence-grading` when you want refreshed final scores.
 
 ## Related Skills
 

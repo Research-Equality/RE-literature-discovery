@@ -1,12 +1,18 @@
 # related-work-writing
 
-Draft one Related Work section from an authority-aware ranked corpus.
+Bucket-aware Related Work drafting from an authority-aware corpus.
 
-Use `selection_bucket` to decide what enters the section:
-- `core`: anchor paragraphs
-- `supporting`: breadth and comparison
-- `background`: historical framing
-- `watchlist`: frontier or preprint discussion only
+Writing tones:
+- `core`: canonical / backbone
+- `supporting`: comparative / supportive
+- `frontier`: cautious / tentative
+
+Caution flags matter:
+- `high_authority_low_evidence`
+- `preprint_only`
+- `weak_metadata`
+
+Frontier papers must not be written as established consensus.
 
 ```bash
 python skills/related-work-writing/scripts/draft_related_work.py \

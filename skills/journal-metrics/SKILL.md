@@ -1,32 +1,49 @@
 ---
 name: journal-metrics
-description: Enrich journal papers with pluggable quartile and impact-factor metadata before authority-aware ranking. Use when journal authority matters and you want a source that can be swapped without changing the rest of the workflow.
+description: Resolve auditable journal metrics through source-of-record, open fallback, and local override layers before authority-aware ranking. Use when journal authority matters and missing or stale metrics must be surfaced explicitly.
 argument-hint: [paper-db]
 ---
 
 # Journal Metrics
 
-Use this skill to attach `jcr_quartile`, `impact_factor`, `cas_quartile`, and optional `core_rank`.
+Use this skill to attach auditable journal metrics rather than opaque quartile values.
 
-## Design Rule
+## Resolution Layers
 
-Keep journal metrics pluggable. The rest of the repository should depend on the fields, not on one specific metric source.
+1. source of record: licensed or manually maintained authoritative export
+2. open fallback: lower-trust open metric source
+3. local override: operator-supplied CSV or JSON
+
+Override data takes precedence when present, but the chosen source is always written into the record.
+
+## Output Fields
+
+- `jcr_quartile`
+- `impact_factor`
+- `cas_quartile`
+- `metric_source`
+- `metric_year`
+- `metric_license_note`
+- `is_official_metric`
+- `journal_metric_warnings`
+
+Missing, stale, ambiguous, or low-confidence metrics must emit warnings.
 
 ## Script
 
 ```bash
-python skills/journal-metrics/scripts/enrich_journal_metrics.py \
+python skills/journal-metrics/scripts/resolve_journal_metrics.py \
   --input outputs/<topic-slug>/paper_db.triaged.jsonl \
   --output outputs/<topic-slug>/paper_db.journal.jsonl
 ```
 
-With a custom metrics file:
+With a local override:
 
 ```bash
-python skills/journal-metrics/scripts/enrich_journal_metrics.py \
+python skills/journal-metrics/scripts/resolve_journal_metrics.py \
   --input outputs/<topic-slug>/paper_db.triaged.jsonl \
   --output outputs/<topic-slug>/paper_db.journal.jsonl \
-  --metrics-file path/to/current_journal_metrics.json
+  --local-override path/to/journal_override.csv
 ```
 
 ## Related Skills

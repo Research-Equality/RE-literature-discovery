@@ -7,6 +7,12 @@
     "jcr_quartile": {"type": ["string", "null"], "enum": ["Q1", "Q2", "Q3", "Q4", null]},
     "impact_factor": {"type": ["number", "null"]},
     "cas_quartile": {"type": ["string", "null"], "enum": ["Q1", "Q2", "Q3", "Q4", null]},
-    "core_rank": {"type": ["string", "null"], "enum": ["A*", "A", "B", "C", null]}
+    "metric_source": {"type": "string"},
+    "metric_year": {"type": ["integer", "null"]},
+    "metric_license_note": {"type": "string"},
+    "is_official_metric": {"type": "boolean"},
+    "journal_metric_match_type": {"type": "string", "enum": ["exact", "fuzzy", "unresolved"]},
+    "journal_metric_match_confidence": {"type": ["number", "null"]},
+    "journal_metric_warnings": {"type": "array", "items": {"type": "string"}}
   }
 }

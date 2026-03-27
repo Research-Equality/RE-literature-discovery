@@ -1,0 +1,38 @@
+{
+  "metadata": {
+    "version": "2026-03-27",
+    "verified_at": "2026-03-27T00:00:00Z",
+    "source_note": "Explicit aliases, historical names, shorthand, and renamed forms subordinate to the official snapshot.",
+    "source_urls": [
+      "https://www.ccf.org.cn/Academic_Evaluation/AI/",
+      "https://www.ccf.org.cn/Academic_Evaluation/NIS/",
+      "https://www.ccf.org.cn/Academic_Evaluation/By_category/2024-06-28/825349.shtml"
+    ]
+  },
+  "aliases": [
+    {"alias": "nips", "canonical": "NeurIPS", "note": "historical abbreviation"},
+    {"alias": "conference on neural information processing systems", "canonical": "NeurIPS", "note": "historical full name"},
+    {"alias": "annual meeting of acl", "canonical": "ACL", "note": "short phrase"},
+    {"alias": "north american chapter of acl", "canonical": "NAACL", "note": "short phrase"},
+    {"alias": "empirical methods in natural language processing", "canonical": "EMNLP", "note": "short phrase"},
+    {"alias": "transactions of the association for computational linguistics", "canonical": "TACL", "note": "full journal name"},
+    {"alias": "journal of machine learning research", "canonical": "JMLR", "note": "full journal name"},
+    {"alias": "ieee transactions on pattern analysis and machine intelligence", "canonical": "TPAMI", "note": "full journal name"},
+    {"alias": "ieee transactions on dependable and secure computing", "canonical": "TDSC", "note": "full journal name"},
+    {"alias": "ieee transactions on information forensics and security", "canonical": "TIFS", "note": "full journal name"},
+    {"alias": "journal of cryptology", "canonical": "JoC", "note": "full journal name"},
+    {"alias": "oakland", "canonical": "S&P", "note": "historical nickname"},
+    {"alias": "ieee symposium on security and privacy", "canonical": "S&P", "note": "official full name"},
+    {"alias": "ieee european symposium on security and privacy", "canonical": "EuroS&P", "note": "official full name"},
+    {"alias": "usenix security symposium", "canonical": "USENIX Security", "note": "official full name"},
+    {"alias": "network and distributed system security symposium", "canonical": "NDSS", "note": "official full name"},
+    {"alias": "international symposium on recent advances in intrusion detection", "canonical": "RAID", "note": "official full name"},
+    {"alias": "annual international conference on the theory and application of cryptology and information security", "canonical": "ASIACRYPT", "note": "official full name"},
+    {"alias": "international conference on automated planning and scheduling", "canonical": "ICAPS", "note": "official full name"},
+    {"alias": "conference on uncertainty in artificial intelligence", "canonical": "UAI", "note": "official full name"},
+    {"alias": "international conference on principles of knowledge representation and reasoning", "canonical": "KR", "note": "official full name"},
+    {"alias": "international joint conference on autonomous agents and multi-agent systems", "canonical": "AAMAS", "note": "official full name"},
+    {"alias": "asia ccs", "canonical": "AsiaCCS", "note": "spaced form"},
+    {"alias": "euro sp", "canonical": "EuroS&P", "note": "spaced short form"}
+  ]
+}

@@ -4,40 +4,54 @@
 
 An authoritative skills repository for literature discovery, authority-aware ranking, evidence synthesis, and survey writing.
 
-This repository is organized as a layered literature workflow:
-- discovery
-- authority enrichment
-- ranking
-- evidence grading
-- review writing
-- survey writing
+The repository is organized around one synchronized workflow:
 
-It is not a general research toolkit. It is the curated home for skills directly related to literature discovery, literature review, and survey generation.
+`literature-search -> venue-authority-resolver -> paper-quality-filter -> authority-ranking -> evidence-grading -> literature-review/systematic-review -> related-work-writing/survey-generation`
 
 ## Positioning
 
 - keep only literature-review-related skills
+- harden the authority layer around data source quality, auditability, and maintainability
 - normalize all outputs into a shared paper schema
-- keep ranking auditable instead of burying logic inside one search script
-- support ResearchClaw-compatible external skill loading from `skills/`
+- keep ranking explainable instead of hiding it inside one search script
+- support ResearchClaw-compatible loading from `skills/`
 
 ## Authority-Aware Workflow
 
-Recommended chain:
+### 1. Discovery
 
-1. `literature-search`
-2. `venue-authority-resolver`
-3. `paper-quality-filter`
-4. `authority-ranking`
-5. `evidence-grading`
-6. `literature-review` or `systematic-review`
-7. `related-work-writing` or `survey-generation`
+`literature-search` performs search, merge, deduplication, and early triage.
 
-`authority-ranking` is the only layer that should write `final_score`.
+### 2. Venue and Metric Resolution
+
+- `venue-authority-resolver` attaches authority metadata
+- `ccf-ranking` uses `data/ccf_official_snapshot.json` and `data/ccf_aliases.json`
+- `journal-metrics` resolves source-of-record, open fallback, and local override layers
+
+### 3. Ranking and Audit
+
+`authority-ranking` is the only layer that writes:
+- `final_score`
+- `selection_bucket`
+- `authority_reason`
+- `ranking_components`
+- `ranking_profile`
+
+It also writes:
+- `outputs/<topic-slug>/analysis/ranking_report.md`
+- `outputs/<topic-slug>/analysis/resolution_audit.jsonl`
+
+### 4. Evidence and Writing
+
+- `evidence-grading` reads authority metadata but does not equate venue prestige with evidence strength
+- `related-work-writing` and `survey-generation` use bucket-aware tone control:
+  - `core`: canonical / backbone
+  - `supporting`: comparative / supportive
+  - `frontier`: cautious / tentative
+
+Frontier papers must never be written as established consensus.
 
 ## Included Skills
-
-The skill collection lives under [`skills/`](skills/).
 
 ### Discovery and Workflow
 
@@ -82,12 +96,13 @@ See [`skills/README.md`](skills/README.md) for the catalog.
 
 The canonical corpus file is `outputs/<topic-slug>/paper_db.jsonl`.
 
-Each paper record should contain at least:
+Each paper record contains at least:
 
-- `paper_id`, `title`, `authors`, `year`, `venue`, `venue_type`, `doi`, `citation_count`
-- `peer_reviewed`, `is_preprint`, `ccf_rank`, `core_rank`, `jcr_quartile`, `impact_factor`, `cas_quartile`
-- `authority_score`, `relevance_score`, `citation_score`, `recency_score`, `evidence_score`, `final_score`
-- `selection_bucket`, `ranking_reason`, `caution_flags`, `quality_flags`
+- bibliographic fields: `paper_id`, `title`, `authors`, `year`, `venue`, `venue_type`, `doi`, `citation_count`
+- authority fields: `peer_reviewed`, `is_preprint`, `ccf_rank`, `core_rank`, `jcr_quartile`, `impact_factor`, `cas_quartile`
+- score fields: `authority_score`, `relevance_score`, `citation_score`, `recency_score`, `evidence_score`, `final_score`
+- writing-control fields: `selection_bucket`, `ranking_reason`, `caution_flags`, `quality_flags`
+- audit fields: `source_of_truth`, `source_version`, `resolved_from`, `match_confidence`, `authority_reason`, `ranking_components`, `ranking_profile`, `last_verified_at`
 
 The full JSON schema lives in [`skills/authority-ranking/schemas/paper_record.schema.json`](skills/authority-ranking/schemas/paper_record.schema.json).
 
@@ -98,6 +113,8 @@ The full JSON schema lives in [`skills/authority-ranking/schemas/paper_record.sc
 - `outputs/<topic-slug>/paper_db.triaged.jsonl`
 - `outputs/<topic-slug>/paper_db.jsonl`
 - `outputs/<topic-slug>/paper_db.evidence.jsonl`
+- `outputs/<topic-slug>/analysis/ranking_report.md`
+- `outputs/<topic-slug>/analysis/resolution_audit.jsonl`
 - `outputs/<topic-slug>/research_log.md`
 - `outputs/<topic-slug>/findings.md`
 - `references.bib`
@@ -108,18 +125,6 @@ The full JSON schema lives in [`skills/authority-ranking/schemas/paper_record.sc
 ## Minimal Workflow Example
 
 See [`examples/authority-aware-minimal/README.md`](examples/authority-aware-minimal/README.md).
-
-Offline smoke test:
-
-```bash
-python skills/literature-search/scripts/prepare_corpus.py \
-  --query "language model reasoning agents" \
-  --inputs examples/authority-aware-minimal/seed_papers.jsonl \
-  --merged-output outputs/authority-offline/paper_db.raw.jsonl \
-  --triaged-output outputs/authority-offline/paper_db.triaged.jsonl \
-  --authority-output outputs/authority-offline/paper_db.jsonl \
-  --profile cs
-```
 
 ## ResearchClaw
 
@@ -132,14 +137,3 @@ When loading it there, treat this repository's [`skills/`](skills/) directory as
 - a skill must directly support literature discovery, authority-aware ranking, evidence synthesis, citation work, or survey writing
 - experiment, implementation, formatting, or presentation skills should not live here
 - prefer scriptable and auditable workflows
-
-## Provenance
-
-The repository was curated and refactored from:
-
-- `agent-research-skills/`
-- `claude-scientific-skills/`
-- `PaperClaw/`
-- `AI-research-SKILLs/`
-
-Only literature-review-related capabilities are retained. The normalized authoritative version is the one under [`skills/`](skills/).

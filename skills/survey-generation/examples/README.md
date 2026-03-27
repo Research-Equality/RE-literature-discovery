@@ -1,0 +1,8 @@
+# survey-generation examples
+
+```bash
+python skills/survey-generation/scripts/plan_bucketed_survey.py \
+  --topic "language model reasoning agents" \
+  --input /tmp/reldemo/paper_db.reranked.jsonl \
+  --output /tmp/reldemo/survey_guidance.md
+```

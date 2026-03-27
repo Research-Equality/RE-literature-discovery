@@ -8,9 +8,10 @@ import json
 import math
 import os
 import re
+from datetime import datetime, timezone
 from typing import Any
 
-SCHEMA_VERSION = "authority-paper-v1"
+SCHEMA_VERSION = "authority-paper-v2"
 
 REQUIRED_FIELDS = [
     "paper_id",
@@ -38,16 +39,18 @@ REQUIRED_FIELDS = [
     "ranking_reason",
     "caution_flags",
     "quality_flags",
+    "source_of_truth",
+    "source_version",
+    "resolved_from",
+    "match_confidence",
+    "authority_reason",
+    "ranking_components",
+    "ranking_profile",
+    "last_verified_at",
 ]
 
 PREPRINT_HINTS = ("arxiv", "biorxiv", "medrxiv", "preprint")
-JOURNAL_HINTS = (
-    "journal",
-    "transactions",
-    "review",
-    "letters",
-    "annals",
-)
+JOURNAL_HINTS = ("journal", "transactions", "review", "letters", "annals")
 WORKSHOP_HINTS = ("workshop", "symposium")
 CONFERENCE_HINTS = (
     "conference",
@@ -71,6 +74,10 @@ CONFERENCE_HINTS = (
     "corl",
     "aistats",
     "uai",
+    "ccs",
+    "ndss",
+    "sp",
+    "usenix security",
 )
 STOPWORDS = {
     "a",
@@ -87,6 +94,11 @@ STOPWORDS = {
     "using",
     "with",
 }
+
+
+def utc_now_iso() -> str:
+    """Return a stable UTC ISO-8601 timestamp."""
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
 def ensure_list(value: Any) -> list[str]:
@@ -109,6 +121,20 @@ def ensure_list(value: Any) -> list[str]:
         if text and text not in cleaned:
             cleaned.append(text)
     return cleaned
+
+
+def ensure_mapping(value: Any) -> dict[str, Any]:
+    """Normalize mapping-like fields."""
+    if isinstance(value, dict):
+        return dict(value)
+    return {}
+
+
+def merge_mappings(existing: Any, incoming: Any) -> dict[str, Any]:
+    """Merge two shallow mappings."""
+    merged = ensure_mapping(existing)
+    merged.update(ensure_mapping(incoming))
+    return merged
 
 
 def normalize_text(value: Any) -> str:
@@ -384,6 +410,14 @@ def normalize_paper(record: dict[str, Any], default_source: str | None = None) -
             "ranking_reason": normalize_text(normalized.get("ranking_reason")),
             "caution_flags": ensure_list(normalized.get("caution_flags")),
             "quality_flags": ensure_list(normalized.get("quality_flags")),
+            "source_of_truth": ensure_mapping(normalized.get("source_of_truth")),
+            "source_version": ensure_mapping(normalized.get("source_version")),
+            "resolved_from": ensure_mapping(normalized.get("resolved_from")),
+            "match_confidence": ensure_mapping(normalized.get("match_confidence")),
+            "authority_reason": normalize_text(normalized.get("authority_reason")),
+            "ranking_components": ensure_mapping(normalized.get("ranking_components")),
+            "ranking_profile": ensure_mapping(normalized.get("ranking_profile")),
+            "last_verified_at": ensure_mapping(normalized.get("last_verified_at")),
             "source": source,
             "sources": ensure_list(normalized.get("sources") or [source]),
             "citation_key": sanitize_citation_key(
@@ -395,6 +429,19 @@ def normalize_paper(record: dict[str, Any], default_source: str | None = None) -
             ),
             "url": normalize_text(normalized.get("url")),
             "pdf_url": normalize_text(normalized.get("pdf_url")),
+            "ccf_match_type": normalize_text(normalized.get("ccf_match_type")),
+            "ccf_match_confidence": coerce_float(normalized.get("ccf_match_confidence")),
+            "ccf_source": normalize_text(normalized.get("ccf_source")),
+            "ccf_version": normalize_text(normalized.get("ccf_version")),
+            "ccf_verified_at": normalize_text(normalized.get("ccf_verified_at")),
+            "ccf_warnings": ensure_list(normalized.get("ccf_warnings")),
+            "metric_source": normalize_text(normalized.get("metric_source")),
+            "metric_year": coerce_int(normalized.get("metric_year")),
+            "metric_license_note": normalize_text(normalized.get("metric_license_note")),
+            "is_official_metric": bool(coerce_bool(normalized.get("is_official_metric")) or False),
+            "journal_metric_warnings": ensure_list(normalized.get("journal_metric_warnings")),
+            "journal_metric_match_type": normalize_text(normalized.get("journal_metric_match_type")),
+            "journal_metric_match_confidence": coerce_float(normalized.get("journal_metric_match_confidence")),
         }
     )
 
@@ -407,38 +454,28 @@ def merge_records(existing: dict[str, Any], incoming: dict[str, Any]) -> dict[st
     other = normalize_paper(incoming)
     merged = dict(base)
 
-    for key in ("title", "venue", "abstract", "publication_date", "url", "pdf_url", "ranking_reason"):
+    for key in ("title", "venue", "abstract", "publication_date", "url", "pdf_url", "ranking_reason", "authority_reason"):
         merged[key] = merge_text(merged.get(key), other.get(key))
 
-    for key in ("doi", "paper_id", "citation_key"):
-        if not normalize_text(merged.get(key)):
-            merged[key] = normalize_text(other.get(key))
-
-    for key in ("year",):
-        if merged.get(key) is None:
+    for key in ("doi", "paper_id", "citation_key", "ccf_rank", "core_rank", "jcr_quartile", "cas_quartile"):
+        if not merged.get(key):
             merged[key] = other.get(key)
 
-    for key in (
-        "ccf_rank",
-        "core_rank",
-        "jcr_quartile",
-        "cas_quartile",
-        "venue_type",
-        "selection_bucket",
-    ):
-        if not merged.get(key) or merged.get(key) == "unranked":
-            merged[key] = other.get(key)
+    if merged.get("year") is None:
+        merged["year"] = other.get("year")
+    if not merged.get("venue_type") or merged.get("selection_bucket") == "unranked":
+        merged["venue_type"] = other.get("venue_type") or merged.get("venue_type")
+        merged["selection_bucket"] = other.get("selection_bucket") or merged.get("selection_bucket")
 
     merged["authors"] = sorted(set(ensure_list(merged.get("authors")) + ensure_list(other.get("authors"))))
-    merged["caution_flags"] = sorted(
-        set(ensure_list(merged.get("caution_flags")) + ensure_list(other.get("caution_flags")))
-    )
-    merged["quality_flags"] = sorted(
-        set(ensure_list(merged.get("quality_flags")) + ensure_list(other.get("quality_flags")))
+    merged["caution_flags"] = sorted(set(ensure_list(merged.get("caution_flags")) + ensure_list(other.get("caution_flags"))))
+    merged["quality_flags"] = sorted(set(ensure_list(merged.get("quality_flags")) + ensure_list(other.get("quality_flags"))))
+    merged["ccf_warnings"] = sorted(set(ensure_list(merged.get("ccf_warnings")) + ensure_list(other.get("ccf_warnings"))))
+    merged["journal_metric_warnings"] = sorted(
+        set(ensure_list(merged.get("journal_metric_warnings")) + ensure_list(other.get("journal_metric_warnings")))
     )
     merged["sources"] = sorted(set(ensure_list(merged.get("sources")) + ensure_list(other.get("sources"))))
     merged["source"] = merged["sources"][0] if merged["sources"] else merge_text(merged.get("source"), other.get("source"))
-
     merged["peer_reviewed"] = bool(merged.get("peer_reviewed") or other.get("peer_reviewed"))
     merged["is_preprint"] = bool(merged.get("is_preprint") or other.get("is_preprint"))
     merged["citation_count"] = max(merged.get("citation_count") or 0, other.get("citation_count") or 0)
@@ -446,6 +483,21 @@ def merge_records(existing: dict[str, Any], incoming: dict[str, Any]) -> dict[st
     for key in ("impact_factor", "authority_score", "relevance_score", "citation_score", "recency_score", "evidence_score", "final_score"):
         values = [value for value in (merged.get(key), other.get(key)) if value is not None]
         merged[key] = max(values) if values else None
+
+    for key in ("source_of_truth", "source_version", "resolved_from", "match_confidence", "ranking_components", "ranking_profile", "last_verified_at"):
+        merged[key] = merge_mappings(merged.get(key), other.get(key))
+
+    for key in ("ccf_match_confidence", "journal_metric_match_confidence"):
+        values = [value for value in (merged.get(key), other.get(key)) if value is not None]
+        merged[key] = max(values) if values else None
+
+    for key in ("ccf_match_type", "ccf_source", "ccf_version", "ccf_verified_at", "metric_source", "metric_license_note", "journal_metric_match_type"):
+        if not normalize_text(merged.get(key)):
+            merged[key] = normalize_text(other.get(key))
+
+    if merged.get("metric_year") is None:
+        merged["metric_year"] = other.get("metric_year")
+    merged["is_official_metric"] = bool(merged.get("is_official_metric") or other.get("is_official_metric"))
 
     merged["paper_id"] = canonical_paper_id(merged)
     if not merged.get("citation_key"):

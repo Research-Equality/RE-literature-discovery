@@ -1,0 +1,17 @@
+{
+  "metadata": {
+    "source_name": "open-journal-metrics-fallback",
+    "version": "2024.1",
+    "metric_year": 2024,
+    "verified_at": "2026-03-27T00:00:00Z",
+    "license_note": "Open fallback metrics with lower trust than the source-of-record layer.",
+    "is_official_metric": false
+  },
+  "journals": [
+    {"canonical": "Journal of Machine Learning Research", "aliases": ["JMLR"], "jcr_quartile": "Q1", "impact_factor": 7.9, "cas_quartile": "Q1"},
+    {"canonical": "Transactions of the Association for Computational Linguistics", "aliases": ["TACL"], "jcr_quartile": "Q1", "impact_factor": 8.1, "cas_quartile": "Q1"},
+    {"canonical": "Artificial Intelligence", "aliases": [], "jcr_quartile": "Q1", "impact_factor": 14.2, "cas_quartile": "Q1"},
+    {"canonical": "IEEE Transactions on Information Forensics and Security", "aliases": ["TIFS"], "jcr_quartile": "Q1", "impact_factor": 7.7, "cas_quartile": "Q1"},
+    {"canonical": "Computers & Security", "aliases": [], "jcr_quartile": "Q1", "impact_factor": 5.6, "cas_quartile": "Q1"}
+  ]
+}

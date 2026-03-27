@@ -2,42 +2,56 @@
 
 # RE-literature-discovery
 
-权威的文献发现、权威性排序、证据整合与综述写作 skills 仓库。
+权威的文献发现、authority-aware 排序、证据整合与综述写作 skills 仓库。
 
-这个仓库围绕一条分层主链组织：
-- discovery
-- authority enrichment
-- ranking
-- evidence grading
-- review writing
-- survey writing
+仓库围绕一条完全同步的主链组织：
 
-它不是通用科研工具箱，而是专门维护与文献调研、文献综述、survey 生成直接相关的技能集合。
+`literature-search -> venue-authority-resolver -> paper-quality-filter -> authority-ranking -> evidence-grading -> literature-review/systematic-review -> related-work-writing/survey-generation`
 
 ## 定位
 
-- 只保留文献综述主链相关 skill
+- 只保留文献综述主链相关 skills
+- 把 authority layer 的数据源质量、可审计性、可维护性补硬
 - 用统一 paper schema 串起所有下游环节
-- 让排序逻辑可审计，而不是藏在单个搜索脚本里
+- 让排序逻辑可解释，而不是埋在搜索脚本里
 - 支持作为 ResearchClaw 外部 skills 源，从 `skills/` 直接加载
 
 ## Authority-Aware Workflow
 
-推荐主链：
+### 1. Discovery
 
-1. `literature-search`
-2. `venue-authority-resolver`
-3. `paper-quality-filter`
-4. `authority-ranking`
-5. `evidence-grading`
-6. `literature-review` 或 `systematic-review`
-7. `related-work-writing` 或 `survey-generation`
+`literature-search` 负责检索、合并、去重和初筛。
 
-其中只有 `authority-ranking` 应该写入 `final_score`。
+### 2. Venue 与指标解析
+
+- `venue-authority-resolver` 负责统一 authority metadata
+- `ccf-ranking` 使用 `data/ccf_official_snapshot.json` 与 `data/ccf_aliases.json`
+- `journal-metrics` 使用 source-of-record、open fallback、local override 三层来源
+
+### 3. 排序与审计
+
+只有 `authority-ranking` 可以写入：
+- `final_score`
+- `selection_bucket`
+- `authority_reason`
+- `ranking_components`
+- `ranking_profile`
+
+同时它会输出：
+- `outputs/<topic-slug>/analysis/ranking_report.md`
+- `outputs/<topic-slug>/analysis/resolution_audit.jsonl`
+
+### 4. 证据与写作
+
+- `evidence-grading` 会读取 authority metadata，但不会把 venue prestige 直接等同于 evidence strength
+- `related-work-writing` 与 `survey-generation` 使用 bucket-aware 语气控制：
+  - `core`: canonical / backbone
+  - `supporting`: comparative / supportive
+  - `frontier`: cautious / tentative
+
+Frontier paper 不允许写成 established consensus。
 
 ## 当前收录
-
-技能集合位于 [`skills/`](skills/)。
 
 ### 发现与主工作流
 
@@ -84,10 +98,11 @@
 
 每条记录至少包含：
 
-- `paper_id`, `title`, `authors`, `year`, `venue`, `venue_type`, `doi`, `citation_count`
-- `peer_reviewed`, `is_preprint`, `ccf_rank`, `core_rank`, `jcr_quartile`, `impact_factor`, `cas_quartile`
-- `authority_score`, `relevance_score`, `citation_score`, `recency_score`, `evidence_score`, `final_score`
-- `selection_bucket`, `ranking_reason`, `caution_flags`, `quality_flags`
+- bibliographic 字段：`paper_id`, `title`, `authors`, `year`, `venue`, `venue_type`, `doi`, `citation_count`
+- authority 字段：`peer_reviewed`, `is_preprint`, `ccf_rank`, `core_rank`, `jcr_quartile`, `impact_factor`, `cas_quartile`
+- score 字段：`authority_score`, `relevance_score`, `citation_score`, `recency_score`, `evidence_score`, `final_score`
+- 写作控制字段：`selection_bucket`, `ranking_reason`, `caution_flags`, `quality_flags`
+- 审计字段：`source_of_truth`, `source_version`, `resolved_from`, `match_confidence`, `authority_reason`, `ranking_components`, `ranking_profile`, `last_verified_at`
 
 完整 JSON schema 位于 [`skills/authority-ranking/schemas/paper_record.schema.json`](skills/authority-ranking/schemas/paper_record.schema.json)。
 
@@ -98,6 +113,8 @@
 - `outputs/<topic-slug>/paper_db.triaged.jsonl`
 - `outputs/<topic-slug>/paper_db.jsonl`
 - `outputs/<topic-slug>/paper_db.evidence.jsonl`
+- `outputs/<topic-slug>/analysis/ranking_report.md`
+- `outputs/<topic-slug>/analysis/resolution_audit.jsonl`
 - `outputs/<topic-slug>/research_log.md`
 - `outputs/<topic-slug>/findings.md`
 - `references.bib`
@@ -108,18 +125,6 @@
 ## 最小工作流示例
 
 见 [`examples/authority-aware-minimal/README.md`](examples/authority-aware-minimal/README.md)。
-
-离线 smoke test：
-
-```bash
-python skills/literature-search/scripts/prepare_corpus.py \
-  --query "language model reasoning agents" \
-  --inputs examples/authority-aware-minimal/seed_papers.jsonl \
-  --merged-output outputs/authority-offline/paper_db.raw.jsonl \
-  --triaged-output outputs/authority-offline/paper_db.triaged.jsonl \
-  --authority-output outputs/authority-offline/paper_db.jsonl \
-  --profile cs
-```
 
 ## ResearchClaw 兼容性
 
@@ -132,14 +137,3 @@ python skills/literature-search/scripts/prepare_corpus.py \
 - skill 必须直接服务于文献发现、authority-aware 排序、证据整合、引用治理或综述写作
 - 实验、实现、排版、演示类 skill 不应放在这里
 - 优先保留可脚本化、可审计的工作流
-
-## 来源
-
-仓库由以下本地来源整理而来：
-
-- `agent-research-skills/`
-- `claude-scientific-skills/`
-- `PaperClaw/`
-- `AI-research-SKILLs/`
-
-这里只保留与文献综述直接相关的能力。规范化后的权威版本以 [`skills/`](skills/) 为准。

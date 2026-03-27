@@ -2,7 +2,13 @@
 
 Metadata-only quality gating and caution flagging layer.
 
-This skill flags missing abstracts, missing venue/year, preprints, and other review-salient quality issues. It can optionally filter out records before final ranking.
+This skill flags:
+- `preprint_only`
+- `weak_metadata`
+- missing abstract/year/venue
+- other review-salient quality issues
+
+It can optionally filter records before final ranking, but it is also valid to keep them and pass the warnings downstream.
 
 ```bash
 python skills/paper-quality-filter/scripts/apply_quality_filter.py \

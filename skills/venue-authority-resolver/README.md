@@ -2,7 +2,17 @@
 
 Resolve venue authority metadata before ranking.
 
-This skill standardizes `venue_type`, `peer_reviewed`, `is_preprint`, `ccf_rank`, `core_rank`, `jcr_quartile`, `impact_factor`, and `cas_quartile`. It does not write `final_score`.
+This skill now delegates to:
+- `ccf-ranking` for audited conference resolution
+- `journal-metrics` for audited journal metric resolution
+
+It standardizes:
+- `venue_type`
+- `peer_reviewed`
+- `is_preprint`
+- `ccf_rank`
+- `jcr_quartile`
+- audit fields such as `source_of_truth`, `resolved_from`, `match_confidence`, `last_verified_at`
 
 ```bash
 python skills/venue-authority-resolver/scripts/resolve_authority.py \

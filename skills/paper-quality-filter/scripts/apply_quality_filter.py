@@ -29,14 +29,20 @@ def apply_quality_filter(
         caution_flags = ensure_list(paper.get("caution_flags"))
         quality_flags = ensure_list(paper.get("quality_flags"))
 
+        weak_metadata = False
         if not paper.get("abstract"):
             caution_flags.append("missing_abstract")
+            weak_metadata = True
         if not paper.get("year"):
             caution_flags.append("missing_year")
+            weak_metadata = True
         if not paper.get("venue"):
             caution_flags.append("missing_venue")
+            weak_metadata = True
         if paper.get("is_preprint"):
             caution_flags.append("preprint")
+            if not paper.get("peer_reviewed"):
+                caution_flags.append("preprint_only")
         if paper.get("citation_count", 0) == 0 and not paper.get("is_preprint") and (paper.get("year") or 0) < 2024:
             caution_flags.append("zero_citations")
         if paper.get("peer_reviewed"):
@@ -47,6 +53,12 @@ def apply_quality_filter(
             quality_flags.append("q1_journal")
         if (paper.get("year") or 0) >= 2024:
             quality_flags.append("recent")
+        if paper.get("ccf_match_type") == "unresolved" and paper.get("venue_type") == "conference":
+            weak_metadata = True
+        if paper.get("venue_type") == "journal" and not paper.get("metric_source"):
+            weak_metadata = True
+        if weak_metadata:
+            caution_flags.append("weak_metadata")
 
         paper["caution_flags"] = sorted(set(caution_flags))
         paper["quality_flags"] = sorted(set(quality_flags))

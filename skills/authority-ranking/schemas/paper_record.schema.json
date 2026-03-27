@@ -27,7 +27,15 @@
     "selection_bucket",
     "ranking_reason",
     "caution_flags",
-    "quality_flags"
+    "quality_flags",
+    "source_of_truth",
+    "source_version",
+    "resolved_from",
+    "match_confidence",
+    "authority_reason",
+    "ranking_components",
+    "ranking_profile",
+    "last_verified_at"
   ],
   "properties": {
     "paper_id": {"type": "string"},
@@ -51,9 +59,17 @@
     "recency_score": {"type": ["number", "null"]},
     "evidence_score": {"type": ["number", "null"]},
     "final_score": {"type": ["number", "null"]},
-    "selection_bucket": {"type": "string", "enum": ["core", "supporting", "background", "watchlist", "unranked"]},
+    "selection_bucket": {"type": "string", "enum": ["core", "supporting", "background", "frontier", "unranked"]},
     "ranking_reason": {"type": "string"},
     "caution_flags": {"type": "array", "items": {"type": "string"}},
-    "quality_flags": {"type": "array", "items": {"type": "string"}}
+    "quality_flags": {"type": "array", "items": {"type": "string"}},
+    "source_of_truth": {"type": "object"},
+    "source_version": {"type": "object"},
+    "resolved_from": {"type": "object"},
+    "match_confidence": {"type": "object"},
+    "authority_reason": {"type": "string"},
+    "ranking_components": {"type": "object"},
+    "ranking_profile": {"type": "object"},
+    "last_verified_at": {"type": "object"}
   }
 }

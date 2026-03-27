@@ -2,15 +2,16 @@
 
 Final authority-aware ranking layer for this repository.
 
-Use this skill after search, merge, dedup, venue-authority resolution, and optional evidence grading. It is the only layer that should write `final_score` and `selection_bucket`.
+This skill is the only layer that should write:
+- `final_score`
+- `selection_bucket`
+- `authority_reason`
+- `ranking_components`
+- `ranking_profile`
 
-Inputs:
-- `outputs/<topic-slug>/paper_db.raw.jsonl` or `paper_db.triaged.jsonl`
-- optional authority-enriched or evidence-enriched JSONL
-
-Outputs:
-- canonical `outputs/<topic-slug>/paper_db.jsonl`
-- optional ranking summary markdown
+It also produces:
+- `outputs/<topic-slug>/analysis/ranking_report.md`
+- `outputs/<topic-slug>/analysis/resolution_audit.jsonl`
 
 Core command:
 
@@ -19,6 +20,5 @@ python skills/authority-ranking/scripts/rank_papers.py \
   --input outputs/<topic-slug>/paper_db.authority.jsonl \
   --output outputs/<topic-slug>/paper_db.jsonl \
   --query "QUERY" \
-  --profile cs \
-  --summary outputs/<topic-slug>/analysis/ranking_summary.md
+  --profile cs
 ```

@@ -1,11 +1,26 @@
 # journal-metrics
 
-Pluggable journal metric resolver for quartiles, impact factor, and generic journal core rank.
+Auditable journal metric resolver for authority-aware literature review.
 
-The bundled metrics file is intentionally a starter sample for wiring and local tests. Replace it with a current licensed export or internal source when accuracy matters.
+This skill now uses three layers:
+- `data/journal_source_of_record.json`
+- `data/journal_open_fallback.json`
+- `--local-override` for operator-supplied CSV/JSON overrides
+
+Key output fields:
+- `jcr_quartile`
+- `impact_factor`
+- `cas_quartile`
+- `metric_source`
+- `metric_year`
+- `metric_license_note`
+- `is_official_metric`
+- `journal_metric_warnings`
+
+Core command:
 
 ```bash
-python skills/journal-metrics/scripts/enrich_journal_metrics.py \
+python skills/journal-metrics/scripts/resolve_journal_metrics.py \
   --input outputs/<topic-slug>/paper_db.triaged.jsonl \
   --output outputs/<topic-slug>/paper_db.journal.jsonl
 ```

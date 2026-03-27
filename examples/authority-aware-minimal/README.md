@@ -8,11 +8,12 @@ This example shows the intended chain:
 4. ranking
 5. evidence grading
 6. related work draft
+7. ranking audit and survey writing guidance
 
 ## Live Search Path
 
 ```bash
-mkdir -p outputs/authority-demo/search_results outputs/authority-demo/analysis outputs/authority-demo/writing
+mkdir -p outputs/authority-demo/search_results outputs/authority-demo/analysis outputs/authority-demo/writing outputs/authority-demo/survey
 
 python skills/systematic-review/scripts/search_semantic_scholar.py \
   --query "language model reasoning agents" \
@@ -36,13 +37,17 @@ python skills/authority-ranking/scripts/rank_papers.py \
   --input outputs/authority-demo/paper_db.evidence.jsonl \
   --output outputs/authority-demo/paper_db.jsonl \
   --query "language model reasoning agents" \
-  --profile cs \
-  --summary outputs/authority-demo/analysis/ranking_summary.md
+  --profile cs
 
 python skills/related-work-writing/scripts/draft_related_work.py \
   --topic "language model reasoning agents" \
   --input outputs/authority-demo/paper_db.jsonl \
   --output outputs/authority-demo/writing/related_work.md
+
+python skills/survey-generation/scripts/plan_bucketed_survey.py \
+  --topic "language model reasoning agents" \
+  --input outputs/authority-demo/paper_db.jsonl \
+  --output outputs/authority-demo/survey/writing_guidance.md
 ```
 
 ## Offline Sample Path
@@ -50,7 +55,7 @@ python skills/related-work-writing/scripts/draft_related_work.py \
 Use the bundled seed search results when you want a no-network smoke test:
 
 ```bash
-mkdir -p outputs/authority-offline/analysis outputs/authority-offline/writing
+mkdir -p outputs/authority-offline/analysis outputs/authority-offline/writing outputs/authority-offline/survey
 
 python skills/literature-search/scripts/prepare_corpus.py \
   --query "language model reasoning agents" \
@@ -74,4 +79,9 @@ python skills/related-work-writing/scripts/draft_related_work.py \
   --topic "language model reasoning agents" \
   --input outputs/authority-offline/paper_db.jsonl \
   --output outputs/authority-offline/writing/related_work.md
+
+python skills/survey-generation/scripts/plan_bucketed_survey.py \
+  --topic "language model reasoning agents" \
+  --input outputs/authority-offline/paper_db.jsonl \
+  --output outputs/authority-offline/survey/writing_guidance.md
 ```

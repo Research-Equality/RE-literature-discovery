@@ -24,15 +24,9 @@ Authority and evidence are not the same thing.
 
 High-prestige venues can still contain exploratory evidence. Strong evidence can also appear outside the highest-prestige venues.
 
-## Inputs
+## Output Policy
 
-- ranked `outputs/<topic-slug>/paper_db.jsonl`
-- optional claim tables or contradiction maps
-
-## Outputs
-
-- `outputs/<topic-slug>/paper_db.evidence.jsonl`
-- optional `outputs/<topic-slug>/analysis/evidence_summary.md`
+After this step, re-run `authority-ranking` so `final_score`, `selection_bucket`, `ranking_report.md`, and `resolution_audit.jsonl` all reflect the new evidence score.
 
 ## Script
 
@@ -43,10 +37,7 @@ python skills/evidence-grading/scripts/grade_evidence.py \
   --summary outputs/<topic-slug>/analysis/evidence_summary.md
 ```
 
-If you want refreshed final scores that include the new `evidence_score`, run `authority-ranking` again after this step.
-
 ## Related Skills
 
 - Upstream: [authority-ranking](../authority-ranking/), [paper-quality-filter](../paper-quality-filter/)
-- Companions: [claim-tracker](../claim-tracker/), [consensus-mapping](../consensus-mapping/), [contradiction-detection](../contradiction-detection/)
 - Downstream: [literature-review](../literature-review/), [related-work-writing](../related-work-writing/), [survey-generation](../survey-generation/)

@@ -1,6 +1,6 @@
 ---
 name: survey-generation
-description: Generate a full survey manuscript from a curated authority-aware corpus, outline, and synthesis notes. Use when the deliverable is an end-to-end survey paper rather than quick review writing or bibliography cleanup.
+description: Generate a full survey manuscript from a curated authority-aware corpus with bucket-aware writing rules. Use when the deliverable is an end-to-end survey paper and frontier papers must remain tentative rather than presented as consensus.
 argument-hint: [topic]
 ---
 
@@ -8,26 +8,23 @@ argument-hint: [topic]
 
 This is the repository's full-manuscript writing skill.
 
-## Recommended Inputs
-
-- `outputs/<topic-slug>/paper_db.evidence.jsonl` or ranked `paper_db.jsonl`
-- `outputs/<topic-slug>/phase5_synthesis/synthesis.md` or `outputs/<topic-slug>/review/review.md`
-- optional `references.bib`
-
 ## Section Planning Policy
 
-- `core` papers define the main section backbone
-- `supporting` papers extend comparisons and breadth
-- `background` papers cover classic framing and historical transitions
-- `watchlist` papers belong only in frontier, outlook, or cautionary sections unless you manually promote them
+- `core`: canonical / backbone treatment
+- `supporting`: comparative / supportive treatment
+- `background`: historical framing
+- `frontier`: cautious / tentative treatment
 
-Use `authority_score` to decide which papers structure the survey. Use `evidence_score` and `caution_flags` to control claim strength and caveats.
+Frontier papers must never be described as established consensus, especially when caution flags include `preprint_only`, `high_authority_low_evidence`, or `weak_metadata`.
 
-## Citation Policy
+## Planning Helper
 
-- never fabricate citations
-- if a record is unresolved, keep an explicit placeholder
-- if provisional cite keys differ from final BibTeX keys, reconcile them with `citation-management`
+```bash
+python skills/survey-generation/scripts/plan_bucketed_survey.py \
+  --topic "TOPIC" \
+  --input outputs/<topic-slug>/paper_db.evidence.jsonl \
+  --output outputs/<topic-slug>/survey/writing_guidance.md
+```
 
 ## Related Skills
 

@@ -11,7 +11,7 @@ AUTHORITY_SCRIPTS = Path(__file__).resolve().parents[2] / "authority-ranking" / 
 if str(AUTHORITY_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(AUTHORITY_SCRIPTS))
 
-from shared_schema import ensure_list, load_jsonl, log_normalize, normalize_paper, save_jsonl
+from shared_schema import ensure_list, ensure_mapping, load_jsonl, log_normalize, normalize_paper, save_jsonl, utc_now_iso
 
 DESIGN_KEYWORDS = {
     "systematic review": 0.95,
@@ -57,6 +57,7 @@ def grade_records(records: list[dict]) -> list[dict]:
     """Attach evidence score and writing label."""
     max_citations = max((normalize_paper(record).get("citation_count", 0) for record in records), default=0)
     graded = []
+    verified_at = utc_now_iso()
     for record in records:
         paper = normalize_paper(record)
         text = f"{paper.get('title', '')} {paper.get('abstract', '')}"
@@ -77,6 +78,7 @@ def grade_records(records: list[dict]) -> list[dict]:
         if paper.get("authority_score", 0) >= 0.75 and score < 0.55:
             caution_flags.append("high_authority_low_evidence")
         paper["caution_flags"] = sorted(set(caution_flags))
+        paper["last_verified_at"] = {**ensure_mapping(paper.get("last_verified_at")), "evidence": verified_at}
         graded.append(paper)
     return graded
 
@@ -84,9 +86,12 @@ def grade_records(records: list[dict]) -> list[dict]:
 def write_summary(records: list[dict], output_path: str):
     """Write a simple markdown summary for evidence grading."""
     counts = {}
+    caution_counts = {}
     for record in records:
         label = record.get("evidence_label", "unknown")
         counts[label] = counts.get(label, 0) + 1
+        for flag in ensure_list(record.get("caution_flags")):
+            caution_counts[flag] = caution_counts.get(flag, 0) + 1
     lines = [
         "# Evidence Grading Summary",
         "",
@@ -96,7 +101,13 @@ def write_summary(records: list[dict], output_path: str):
     for label in ("strong", "moderate", "exploratory", "weak"):
         if label in counts:
             lines.append(f"| {label} | {counts[label]} |")
-    Path(output_path).write_text("\n".join(lines) + "\n", encoding="utf-8")
+    if caution_counts:
+        lines.extend(["", "## Caution Flags", "", "| Flag | Count |", "| --- | ---: |"])
+        for flag, count in sorted(caution_counts.items(), key=lambda item: (-item[1], item[0])):
+            lines.append(f"| {flag} | {count} |")
+    target = Path(output_path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def main():

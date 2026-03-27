@@ -15,7 +15,7 @@ for path in (AUTHORITY_SCRIPTS, QUALITY_SCRIPTS, RESOLVER_SCRIPTS):
         sys.path.insert(0, str(path))
 
 from apply_quality_filter import apply_quality_filter
-from rank_papers import rank_records
+from rank_papers import infer_analysis_paths, rank_records, write_ranking_report, write_resolution_audit
 from resolve_authority import resolve_records
 from shared_schema import load_jsonl, merge_records, normalize_paper, save_jsonl, token_overlap_score
 
@@ -92,6 +92,9 @@ def main():
     )
     ranked = rank_records(filtered, query=args.query, profile_name=args.profile)
     save_jsonl(ranked, args.authority_output)
+    report_path, audit_path = infer_analysis_paths(args.authority_output)
+    write_ranking_report(ranked, report_path)
+    write_resolution_audit(ranked, audit_path)
 
 
 if __name__ == "__main__":

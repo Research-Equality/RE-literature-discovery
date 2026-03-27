@@ -1,9 +1,19 @@
 # survey-generation
 
-Full survey manuscript generation from an authority-aware corpus.
+Bucket-aware survey manuscript planning from an authority-aware corpus.
 
-Use ranked buckets to control section composition:
-- `core` papers define the main section backbone
-- `supporting` papers fill comparisons and breadth
-- `background` papers supply classic framing
-- `watchlist` papers belong only in frontier or outlook sections unless manually promoted
+Writing tones:
+- `core`: canonical / backbone
+- `supporting`: comparative / supportive
+- `frontier`: cautious / tentative
+
+Frontier papers must never be written as established consensus.
+
+Planning helper:
+
+```bash
+python skills/survey-generation/scripts/plan_bucketed_survey.py \
+  --topic "TOPIC" \
+  --input outputs/<topic-slug>/paper_db.evidence.jsonl \
+  --output outputs/<topic-slug>/survey/writing_guidance.md
+```

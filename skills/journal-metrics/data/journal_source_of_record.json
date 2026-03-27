@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "source_name": "repository-maintained-journal-source-of-record",
+    "version": "2025.1",
+    "metric_year": 2025,
+    "verified_at": "2026-03-27T00:00:00Z",
+    "license_note": "Repository-maintained authoritative export for literature review use.",
+    "is_official_metric": true
+  },
+  "journals": [
+    {"canonical": "Journal of Machine Learning Research", "aliases": ["JMLR"], "jcr_quartile": "Q1", "impact_factor": 7.9, "cas_quartile": "Q1"},
+    {"canonical": "Transactions of the Association for Computational Linguistics", "aliases": ["TACL"], "jcr_quartile": "Q1", "impact_factor": 8.1, "cas_quartile": "Q1"},
+    {"canonical": "Artificial Intelligence", "aliases": [], "jcr_quartile": "Q1", "impact_factor": 14.2, "cas_quartile": "Q1"},
+    {"canonical": "IEEE Transactions on Pattern Analysis and Machine Intelligence", "aliases": ["TPAMI", "PAMI"], "jcr_quartile": "Q1", "impact_factor": 20.8, "cas_quartile": "Q1"},
+    {"canonical": "IEEE Transactions on Information Forensics and Security", "aliases": ["TIFS"], "jcr_quartile": "Q1", "impact_factor": 7.7, "cas_quartile": "Q1"},
+    {"canonical": "ACM Transactions on Privacy and Security", "aliases": ["TOPS"], "jcr_quartile": "Q2", "impact_factor": 3.8, "cas_quartile": "Q2"},
+    {"canonical": "Computers & Security", "aliases": [], "jcr_quartile": "Q1", "impact_factor": 5.6, "cas_quartile": "Q1"},
+    {"canonical": "Machine Learning", "aliases": [], "jcr_quartile": "Q2", "impact_factor": 7.5, "cas_quartile": "Q2"},
+    {"canonical": "Nature", "aliases": [], "jcr_quartile": "Q1", "impact_factor": 64.8, "cas_quartile": "Q1"},
+    {"canonical": "Science", "aliases": [], "jcr_quartile": "Q1", "impact_factor": 56.9, "cas_quartile": "Q1"}
+  ]
+}

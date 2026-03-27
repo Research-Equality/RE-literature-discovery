@@ -1,11 +1,16 @@
 # ccf-ranking examples
 
-Bundled mapping file:
-- [`/Users/mingxinyang/Documents/GitHub/RE-literature-discovery/skills/ccf-ranking/references/ccf_venues.sample.json`](/Users/mingxinyang/Documents/GitHub/RE-literature-discovery/skills/ccf-ranking/references/ccf_venues.sample.json)
+Snapshot files:
+- [`/Users/mingxinyang/Documents/GitHub/RE-literature-discovery/skills/ccf-ranking/data/ccf_official_snapshot.json`](/Users/mingxinyang/Documents/GitHub/RE-literature-discovery/skills/ccf-ranking/data/ccf_official_snapshot.json)
+- [`/Users/mingxinyang/Documents/GitHub/RE-literature-discovery/skills/ccf-ranking/data/ccf_aliases.json`](/Users/mingxinyang/Documents/GitHub/RE-literature-discovery/skills/ccf-ranking/data/ccf_aliases.json)
 
-Minimal commands:
+Resolve a single venue with audit metadata:
 
 ```bash
-python skills/ccf-ranking/scripts/resolve_ccf.py --venue "ICML"
-python skills/ccf-ranking/scripts/resolve_ccf.py --venue "Transactions of the Association for Computational Linguistics"
+python skills/ccf-ranking/scripts/resolve_ccf_rank.py --venue "Oakland"
+python skills/ccf-ranking/scripts/resolve_ccf_rank.py --venue "USENIX Security Symposium"
+python skills/ccf-ranking/scripts/resolve_ccf_rank.py --venue "International Conference on Automated Planning and Scheduling"
+python skills/ccf-ranking/scripts/resolve_ccf_rank.py --venue "ICLR"
 ```
+
+`ICLR` is a useful negative check for the current offline subset: it should stay unresolved unless the maintained official snapshot is explicitly extended.

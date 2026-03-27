@@ -25,7 +25,7 @@ Prefer a corpus that already includes:
 - use `core` papers to anchor major themes
 - use `supporting` papers to widen comparisons
 - use `background` papers for historical framing
-- mention `watchlist` papers only when frontier context matters, especially for preprints
+- mention `frontier` papers only when emerging context matters, especially for preprints
 
 Do not treat high authority as a substitute for evidence. When authority is high but evidence is exploratory, write with caution.
 
