@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PaperQualityFlags",
+  "type": "object",
+  "properties": {
+    "peer_reviewed": {"type": "boolean"},
+    "is_preprint": {"type": "boolean"},
+    "quality_flags": {"type": "array", "items": {"type": "string"}},
+    "caution_flags": {"type": "array", "items": {"type": "string"}}
+  }
+}

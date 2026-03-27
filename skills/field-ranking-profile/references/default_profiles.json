@@ -1,0 +1,79 @@
+{
+  "profiles": {
+    "cs": {
+      "name": "cs",
+      "description": "Computer science and AI review profile. CCF-ranked peer-reviewed venues have the strongest authority weight.",
+      "authority_weights": {
+        "ccf_rank": 0.5,
+        "journal_metrics": 0.12,
+        "peer_reviewed": 0.18,
+        "venue_type": 0.12,
+        "preprint_penalty": 0.08
+      },
+      "final_weights": {
+        "relevance": 0.4,
+        "authority": 0.22,
+        "citation": 0.14,
+        "recency": 0.1,
+        "evidence": 0.14
+      },
+      "recency_horizon_years": 8,
+      "fallback_evidence_score": 0.5,
+      "bucket_thresholds": {
+        "core": 0.78,
+        "supporting": 0.6,
+        "background": 0.4
+      }
+    },
+    "biomedicine": {
+      "name": "biomedicine",
+      "description": "Biomedical review profile. Journal quartiles and peer review weigh more than conference signals.",
+      "authority_weights": {
+        "ccf_rank": 0.1,
+        "journal_metrics": 0.42,
+        "peer_reviewed": 0.24,
+        "venue_type": 0.12,
+        "preprint_penalty": 0.12
+      },
+      "final_weights": {
+        "relevance": 0.36,
+        "authority": 0.24,
+        "citation": 0.12,
+        "recency": 0.1,
+        "evidence": 0.18
+      },
+      "recency_horizon_years": 10,
+      "fallback_evidence_score": 0.5,
+      "bucket_thresholds": {
+        "core": 0.8,
+        "supporting": 0.62,
+        "background": 0.42
+      }
+    },
+    "general": {
+      "name": "general",
+      "description": "Balanced cross-domain profile for mixed corpora.",
+      "authority_weights": {
+        "ccf_rank": 0.22,
+        "journal_metrics": 0.26,
+        "peer_reviewed": 0.22,
+        "venue_type": 0.18,
+        "preprint_penalty": 0.12
+      },
+      "final_weights": {
+        "relevance": 0.38,
+        "authority": 0.2,
+        "citation": 0.14,
+        "recency": 0.12,
+        "evidence": 0.16
+      },
+      "recency_horizon_years": 9,
+      "fallback_evidence_score": 0.5,
+      "bucket_thresholds": {
+        "core": 0.76,
+        "supporting": 0.58,
+        "background": 0.4
+      }
+    }
+  }
+}

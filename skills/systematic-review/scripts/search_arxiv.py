@@ -17,6 +17,13 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime
+from pathlib import Path
+
+AUTHORITY_SCRIPTS = Path(__file__).resolve().parents[2] / "authority-ranking" / "scripts"
+if str(AUTHORITY_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(AUTHORITY_SCRIPTS))
+
+from shared_schema import normalize_paper
 
 ARXIV_API = "http://export.arxiv.org/api/query"
 NS = {"atom": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}
@@ -106,19 +113,27 @@ def parse_entry(entry: ET.Element) -> dict:
     published = text("published")
     year = int(published[:4]) if len(published) >= 4 else None
 
-    return {
-        "arxiv_id": arxiv_id,
-        "title": " ".join(text("title").split()),
-        "authors": authors,
-        "abstract": abstract,
-        "year": year,
-        "published": published,
-        "updated": text("updated"),
-        "categories": categories,
-        "pdf_url": pdf_url,
-        "comment": comment,
-        "source": "arxiv",
-    }
+    return normalize_paper(
+        {
+            "paper_id": f"arxiv:{arxiv_id}",
+            "arxiv_id": arxiv_id,
+            "title": " ".join(text("title").split()),
+            "authors": authors,
+            "abstract": abstract,
+            "year": year,
+            "published": published,
+            "updated": text("updated"),
+            "categories": categories,
+            "pdf_url": pdf_url,
+            "comment": comment,
+            "venue": "arXiv",
+            "venue_type": "preprint",
+            "peer_reviewed": False,
+            "is_preprint": True,
+            "citation_count": 0,
+            "source": "arxiv",
+        }
+    )
 
 
 def search(

@@ -2,143 +2,144 @@
 
 # RE-literature-discovery
 
-An authoritative skills repository for literature discovery, evidence synthesis, and survey writing.
+An authoritative skills repository for literature discovery, authority-aware ranking, evidence synthesis, and survey writing.
 
-This repository focuses on the core academic literature workflow: search, reading, synthesis, citation management, database lookup, related work writing, and full survey generation. It is not a general end-to-end research toolkit. It is a curated home for skills directly related to literature discovery, literature review, and survey writing.
+This repository is organized as a layered literature workflow:
+- discovery
+- authority enrichment
+- ranking
+- evidence grading
+- review writing
+- survey writing
+
+It is not a general research toolkit. It is the curated home for skills directly related to literature discovery, literature review, and survey generation.
 
 ## Positioning
 
-- Keep only skills related to literature research, survey writing, citation work, and scholarly source discovery
-- Normalize everything into a portable repository layout without depending on one author's local machine
-- Serve as the authoritative home for future literature-review-related skills
+- keep only literature-review-related skills
+- normalize all outputs into a shared paper schema
+- keep ranking auditable instead of burying logic inside one search script
+- support ResearchClaw-compatible external skill loading from `skills/`
+
+## Authority-Aware Workflow
+
+Recommended chain:
+
+1. `literature-search`
+2. `venue-authority-resolver`
+3. `paper-quality-filter`
+4. `authority-ranking`
+5. `evidence-grading`
+6. `literature-review` or `systematic-review`
+7. `related-work-writing` or `survey-generation`
+
+`authority-ranking` is the only layer that should write `final_score`.
 
 ## Included Skills
 
 The skill collection lives under [`skills/`](skills/).
 
-### Workflow Skills
+### Discovery and Workflow
 
-- `literature-search`: multi-source academic search with structured JSONL and BibTeX output
-- `literature-review`: multi-perspective review and knowledge synthesis
-- `systematic-review`: a six-phase systematic literature review pipeline
-- `citation-management`: BibTeX harvesting, validation, deduplication, and repair
-- `related-work-writing`: Related Work writing workflows
-- `survey-generation`: full survey paper generation
+- `literature-search`
+- `literature-review`
+- `systematic-review`
+- `citation-management`
+- `related-work-writing`
+- `survey-generation`
 
-### Database and Reference Skills
+### Authority and Ranking
 
-- `arxiv-database`: arXiv preprint search and PDF retrieval
-- `biorxiv-database`: bioRxiv preprint search for life-science literature
-- `openalex-database`: OpenAlex queries for scholarly search and bibliometrics
-- `pubmed-database`: direct PubMed query construction and E-utilities workflows
-- `pyzotero`: Zotero library automation and reference management integration
+- `venue-authority-resolver`
+- `authority-ranking`
+- `ccf-ranking`
+- `journal-metrics`
+- `paper-quality-filter`
+- `field-ranking-profile`
 
-### Monitoring and Analysis Skills
+### Databases and Reference Management
 
-- `arxiv-monitor`: recurring arXiv surveillance and digest generation
-- `citation-graph`: citation-network analysis for foundational and bridge papers
-- `gap-detection`: open-question and novelty-opportunity analysis
-- `claim-tracker`: claim-level provenance and status tracking
-- `consensus-mapping`: mapping settled versus contested claims
-- `contradiction-detection`: identifying and structuring conflicting findings
-- `cross-paper-synthesis`: comparison tables, timelines, and through-line synthesis
-- `evidence-grading`: grading claim and paper strength for calibrated writing
+- `arxiv-database`
+- `biorxiv-database`
+- `openalex-database`
+- `pubmed-database`
+- `pyzotero`
 
-See [`skills/README.md`](skills/README.md) for the skill catalog.
+### Monitoring and Corpus Analysis
 
-## Skill Routing
+- `arxiv-monitor`
+- `citation-graph`
+- `gap-detection`
+- `claim-tracker`
+- `consensus-mapping`
+- `contradiction-detection`
+- `cross-paper-synthesis`
+- `evidence-grading`
 
-To avoid overlap, the repository uses a layered workflow:
+See [`skills/README.md`](skills/README.md) for the catalog.
 
-- `literature-search` is the default entry point for multi-source paper discovery
-- `arxiv-database`, `biorxiv-database`, `openalex-database`, and `pubmed-database` are source-specific companions for advanced database tasks
-- `arxiv-monitor` is the recurring watch layer after topic definition
-- `systematic-review` is the end-to-end systematic review pipeline
-- `literature-review` is the synthesis layer for an already collected corpus
-- `citation-graph`, `gap-detection`, `claim-tracker`, `consensus-mapping`, `contradiction-detection`, `cross-paper-synthesis`, and `evidence-grading` are corpus-analysis companions
-- `citation-management` and `pyzotero` are bibliography and library-management utilities
-- `related-work-writing` writes one paper section
-- `survey-generation` writes a full survey manuscript
+## Shared Paper Schema
 
-Shared artifact conventions:
+The canonical corpus file is `outputs/<topic-slug>/paper_db.jsonl`.
 
-- `outputs/<topic-slug>/search_results/*.jsonl` for raw retrieval results
-- `outputs/<topic-slug>/paper_db.jsonl` for the shared paper corpus
-- `outputs/<topic-slug>/research_log.md` and `outputs/<topic-slug>/findings.md` for long-running review state
-- `references.bib` for the active bibliography
-- `outputs/<topic-slug>/review/`, `outputs/<topic-slug>/phase*/`, and `outputs/<topic-slug>/survey/` for downstream writing artifacts
+Each paper record should contain at least:
 
-## Repository Layout
+- `paper_id`, `title`, `authors`, `year`, `venue`, `venue_type`, `doi`, `citation_count`
+- `peer_reviewed`, `is_preprint`, `ccf_rank`, `core_rank`, `jcr_quartile`, `impact_factor`, `cas_quartile`
+- `authority_score`, `relevance_score`, `citation_score`, `recency_score`, `evidence_score`, `final_score`
+- `selection_bucket`, `ranking_reason`, `caution_flags`, `quality_flags`
 
-```text
-skills/
-  arxiv-monitor/
-  arxiv-database/
-  biorxiv-database/
-  citation-graph/
-  claim-tracker/
-  consensus-mapping/
-  contradiction-detection/
-  cross-paper-synthesis/
-  openalex-database/
-  pubmed-database/
-  pyzotero/
-  evidence-grading/
-  gap-detection/
-  literature-search/
-  literature-review/
-  systematic-review/
-  citation-management/
-  related-work-writing/
-  survey-generation/
-```
+The full JSON schema lives in [`skills/authority-ranking/schemas/paper_record.schema.json`](skills/authority-ranking/schemas/paper_record.schema.json).
 
-## Usage
+## Shared Artifacts
 
-Command examples assume you run them from the repository root.
+- `outputs/<topic-slug>/search_results/*.jsonl`
+- `outputs/<topic-slug>/paper_db.raw.jsonl`
+- `outputs/<topic-slug>/paper_db.triaged.jsonl`
+- `outputs/<topic-slug>/paper_db.jsonl`
+- `outputs/<topic-slug>/paper_db.evidence.jsonl`
+- `outputs/<topic-slug>/research_log.md`
+- `outputs/<topic-slug>/findings.md`
+- `references.bib`
+- `outputs/<topic-slug>/review/`
+- `outputs/<topic-slug>/phase*/`
+- `outputs/<topic-slug>/survey/`
+
+## Minimal Workflow Example
+
+See [`examples/authority-aware-minimal/README.md`](examples/authority-aware-minimal/README.md).
+
+Offline smoke test:
 
 ```bash
-python skills/systematic-review/scripts/search_semantic_scholar.py \
-  --query "long-context reasoning agents" \
-  --max-results 20 \
-  --api-key "$S2_API_KEY"
+python skills/literature-search/scripts/prepare_corpus.py \
+  --query "language model reasoning agents" \
+  --inputs examples/authority-aware-minimal/seed_papers.jsonl \
+  --merged-output outputs/authority-offline/paper_db.raw.jsonl \
+  --triaged-output outputs/authority-offline/paper_db.triaged.jsonl \
+  --authority-output outputs/authority-offline/paper_db.jsonl \
+  --profile cs
 ```
-
-Recommended environment:
-
-- Python 3.10+
-- Optional environment variable: `S2_API_KEY`
-- Optional dependency: `PyMuPDF` for PDF extraction
-
-Systematic review outputs are recommended to live under `outputs/<topic-slug>/` so the skill directories remain clean.
 
 ## ResearchClaw
 
-This repository can also be used as an external skills source for [ResearchClaw](https://github.com/ymx10086/ResearchClaw).
+This repository can be used as an external skills source for [ResearchClaw](https://github.com/ymx10086/ResearchClaw).
 
-When loading it there, treat this repository's [`skills/`](skills/) directory as the authoritative loadable skill set. The root README and skill catalog define the routing rules, shared artifacts, and role boundaries between skills.
+When loading it there, treat this repository's [`skills/`](skills/) directory as the authoritative loadable skill set. The root README and skill catalog define routing rules, shared artifacts, and role boundaries.
 
 ## Curation Rules
 
-- A skill must directly support literature discovery, reading, synthesis, citation work, or related work writing
-- Skills for experiments, code implementation, paper formatting, or presentation should not live here
-- Prefer skills that are scriptable, reusable, and auditable
+- a skill must directly support literature discovery, authority-aware ranking, evidence synthesis, citation work, or survey writing
+- experiment, implementation, formatting, or presentation skills should not live here
+- prefer scriptable and auditable workflows
 
 ## Provenance
 
-The current skill set was curated and refactored from four local source snapshots:
+The repository was curated and refactored from:
 
-- `agent-research-skills/`: workflow-oriented academic research skills
-- `claude-scientific-skills/`: scientific database, citation, and scholarly tooling skills
-- `PaperClaw/`: literature monitoring and corpus-analysis skills for research teams
-- `AI-research-SKILLs/`: AI research orchestration and paper-writing skills
+- `agent-research-skills/`
+- `claude-scientific-skills/`
+- `PaperClaw/`
+- `AI-research-SKILLs/`
 
-Only literature-review-related skills are retained. Overlapping capabilities were merged into the existing mainline skills instead of duplicated one-to-one. The normalized authoritative version is the one under [`skills/`](skills/).
-
-Examples of merged overlaps:
-
-- `PaperClaw/living-review` -> covered by `literature-review` plus `systematic-review`
-- `PaperClaw/semantic-scholar` -> covered by `literature-search` and `systematic-review` search tooling
-- `PaperClaw/zotero-integration` -> covered by `pyzotero` plus `citation-management`
-- `AI-research-SKILLs/autoresearch` -> distilled into `systematic-review` workspace discipline and resumable review templates
-- `AI-research-SKILLs/ml-paper-writing` -> distilled into `citation-management`, `related-work-writing`, and `survey-generation` citation-verification rules
+Only literature-review-related capabilities are retained. The normalized authoritative version is the one under [`skills/`](skills/).

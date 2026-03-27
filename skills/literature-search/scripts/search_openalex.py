@@ -16,6 +16,13 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+from pathlib import Path
+
+AUTHORITY_SCRIPTS = Path(__file__).resolve().parents[2] / "authority-ranking" / "scripts"
+if str(AUTHORITY_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(AUTHORITY_SCRIPTS))
+
+from shared_schema import normalize_paper
 
 
 OPENALEX_API = "https://api.openalex.org"
@@ -103,23 +110,28 @@ def parse_work(work: dict) -> dict | None:
     work_type = work.get("type", "")
     peer_reviewed = work_type in ("article", "proceedings-article", "book-chapter")
 
-    return {
-        "openalex_id": work.get("id", ""),
-        "doi": doi,
-        "arxiv_id": arxiv_id,
-        "title": work["title"],
-        "authors": authors,
-        "abstract": abstract[:1000],
-        "year": work.get("publication_year"),
-        "venue": venue,
-        "venue_normalized": venue,
-        "peer_reviewed": peer_reviewed,
-        "citationCount": work.get("cited_by_count", 0),
-        "url": work.get("id", ""),
-        "publicationDate": work.get("publication_date", ""),
-        "pdf_url": pdf_url,
-        "source": "openalex",
-    }
+    return normalize_paper(
+        {
+            "openalex_id": work.get("id", ""),
+            "paper_id": work.get("id", ""),
+            "doi": doi,
+            "arxiv_id": arxiv_id,
+            "title": work["title"],
+            "authors": authors,
+            "abstract": abstract[:1000],
+            "year": work.get("publication_year"),
+            "venue": venue,
+            "venue_normalized": venue,
+            "peer_reviewed": peer_reviewed,
+            "citationCount": work.get("cited_by_count", 0),
+            "citation_count": work.get("cited_by_count", 0),
+            "url": work.get("id", ""),
+            "publicationDate": work.get("publication_date", ""),
+            "pdf_url": pdf_url,
+            "type": work_type,
+            "source": "openalex",
+        }
+    )
 
 
 def search_works(

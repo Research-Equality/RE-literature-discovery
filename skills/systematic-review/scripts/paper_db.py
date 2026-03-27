@@ -2,13 +2,13 @@
 """JSONL paper database management.
 
 Subcommands: add, search, merge, tag, stats, export.
-Deduplication by title similarity (Jaccard on word tokens, threshold 0.8).
+Merging normalizes records into the shared authority-aware paper schema.
 
 Usage:
     python paper_db.py merge --inputs arxiv.jsonl s2.jsonl --output merged.jsonl
     python paper_db.py stats --input paper_db.jsonl
     python paper_db.py search --input paper_db.jsonl --query "transformer"
-    python paper_db.py tag --input paper_db.jsonl --ids "2401.12345" --tags core method
+    python paper_db.py tag --input paper_db.jsonl --ids "arxiv:2401.12345" --tags core method
     python paper_db.py add --input paper_db.jsonl --record '{"title":"...", "arxiv_id":"..."}'
     python paper_db.py export --input paper_db.jsonl --format csv
 """
@@ -20,6 +20,13 @@ import json
 import os
 import re
 import sys
+from pathlib import Path
+
+AUTHORITY_SCRIPTS = Path(__file__).resolve().parents[2] / "authority-ranking" / "scripts"
+if str(AUTHORITY_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(AUTHORITY_SCRIPTS))
+
+from shared_schema import load_jsonl, merge_records, normalize_paper, save_jsonl
 
 
 def tokenize(text: str) -> set[str]:
@@ -34,62 +41,46 @@ def jaccard(a: set, b: set) -> float:
     return len(a & b) / len(a | b)
 
 
-def load_jsonl(path: str) -> list[dict]:
-    """Load records from a JSONL file."""
-    records = []
-    if not os.path.exists(path):
-        return records
-    with open(path, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                records.append(json.loads(line))
-    return records
-
-
-def save_jsonl(records: list[dict], path: str):
-    """Save records to a JSONL file."""
-    with open(path, "w", encoding="utf-8") as f:
-        for rec in records:
-            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
-
-
 def get_paper_id(paper: dict) -> str:
     """Get the canonical ID for a paper."""
-    return paper.get("arxiv_id") or paper.get("paperId") or ""
+    record = normalize_paper(paper)
+    return record.get("paper_id") or ""
 
 
 def deduplicate(records: list[dict], threshold: float = 0.8) -> list[dict]:
     """Remove duplicate papers by title similarity."""
-    seen_titles: list[set[str]] = []
-    seen_ids: set[str] = set()
-    unique = []
+    seen_titles: list[tuple[set[str], str]] = []
+    unique_by_id: dict[str, dict] = {}
+    order: list[str] = []
 
     for rec in records:
-        pid = get_paper_id(rec)
-        title = rec.get("title", "")
+        paper = normalize_paper(rec)
+        pid = get_paper_id(paper)
+        title = paper.get("title", "")
 
         # Exact ID match
-        if pid and pid in seen_ids:
+        if pid and pid in unique_by_id:
+            unique_by_id[pid] = merge_records(unique_by_id[pid], paper)
             continue
 
         # Title similarity check
         title_tokens = tokenize(title)
         is_dup = False
-        for prev_tokens in seen_titles:
+        for prev_tokens, prev_id in seen_titles:
             if jaccard(title_tokens, prev_tokens) >= threshold:
                 is_dup = True
+                unique_by_id[prev_id] = merge_records(unique_by_id[prev_id], paper)
                 break
 
         if is_dup:
             continue
 
         if pid:
-            seen_ids.add(pid)
-        seen_titles.append(title_tokens)
-        unique.append(rec)
+            unique_by_id[pid] = paper
+            order.append(pid)
+        seen_titles.append((title_tokens, pid))
 
-    return unique
+    return [unique_by_id[pid] for pid in order]
 
 
 def merge_databases(inputs: list[str], output: str, threshold: float = 0.8):
@@ -107,21 +98,30 @@ def merge_databases(inputs: list[str], output: str, threshold: float = 0.8):
 
 def filter_db(db_path: str, output: str, *, min_score: float = 0.0, max_papers: int = 0,
               require_keywords: list[str] | None = None):
-    """Filter papers by affinity_score threshold and optional keyword relevance."""
+    """Filter papers by relevance/final score threshold and optional keyword relevance."""
     records = load_jsonl(db_path)
     kept = []
     for rec in records:
-        score = rec.get("affinity_score")
+        rec = normalize_paper(rec)
+        score = rec.get("final_score")
+        if score is None:
+            score = rec.get("relevance_score")
+        if score is None:
+            score = rec.get("affinity_score")
         if score is not None and score < min_score:
             continue
         if score is None and require_keywords:
-            title_lower = rec.get("title", "").lower()
-            if not any(k in title_lower for k in require_keywords):
+            title_abstract = f"{rec.get('title', '')} {rec.get('abstract', '')}".lower()
+            if not any(k.lower() in title_abstract for k in require_keywords):
                 continue
         kept.append(rec)
 
-    # Sort by score descending (None at end)
-    kept.sort(key=lambda r: -(r.get("affinity_score") or 0))
+    kept.sort(
+        key=lambda r: (
+            -(r.get("final_score") or r.get("relevance_score") or r.get("affinity_score") or 0),
+            -(r.get("citation_count") or 0),
+        )
+    )
 
     if max_papers > 0 and len(kept) > max_papers:
         kept = kept[:max_papers]
@@ -178,6 +178,7 @@ def compute_stats(db_path: str) -> dict:
     peer_reviewed_count = 0
 
     for rec in records:
+        rec = normalize_paper(rec)
         src = rec.get("source", "unknown")
         sources[src] = sources.get(src, 0) + 1
 
@@ -196,7 +197,7 @@ def compute_stats(db_path: str) -> dict:
         if rec.get("peer_reviewed"):
             peer_reviewed_count += 1
 
-        total_citations += rec.get("citationCount", 0) or 0
+        total_citations += rec.get("citation_count", 0) or 0
 
         for tag in rec.get("tags", []):
             tags_dist[tag] = tags_dist.get(tag, 0) + 1
@@ -213,6 +214,8 @@ def compute_stats(db_path: str) -> dict:
         "total_citations": total_citations,
         "avg_citations": round(total_citations / len(records), 1),
         "tags": tags_dist,
+        "core_bucket": sum(1 for rec in records if normalize_paper(rec).get("selection_bucket") == "core"),
+        "supporting_bucket": sum(1 for rec in records if normalize_paper(rec).get("selection_bucket") == "supporting"),
     }
 
 
@@ -222,8 +225,23 @@ def export_csv(db_path: str) -> str:
     if not records:
         return ""
 
-    fields = ["arxiv_id", "paperId", "title", "authors", "year", "venue",
-              "citationCount", "pdf_url", "tags", "source"]
+    fields = [
+        "paper_id",
+        "citation_key",
+        "title",
+        "authors",
+        "year",
+        "venue",
+        "venue_type",
+        "citation_count",
+        "authority_score",
+        "evidence_score",
+        "final_score",
+        "selection_bucket",
+        "pdf_url",
+        "tags",
+        "source",
+    ]
 
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=fields, extrasaction="ignore")

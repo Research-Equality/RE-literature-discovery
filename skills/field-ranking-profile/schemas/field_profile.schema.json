@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FieldRankingProfile",
+  "type": "object",
+  "required": ["name", "authority_weights", "final_weights", "bucket_thresholds"],
+  "properties": {
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "authority_weights": {
+      "type": "object",
+      "properties": {
+        "ccf_rank": {"type": "number"},
+        "journal_metrics": {"type": "number"},
+        "peer_reviewed": {"type": "number"},
+        "venue_type": {"type": "number"},
+        "preprint_penalty": {"type": "number"}
+      }
+    },
+    "final_weights": {
+      "type": "object",
+      "properties": {
+        "relevance": {"type": "number"},
+        "authority": {"type": "number"},
+        "citation": {"type": "number"},
+        "recency": {"type": "number"},
+        "evidence": {"type": "number"}
+      }
+    },
+    "bucket_thresholds": {
+      "type": "object",
+      "properties": {
+        "core": {"type": "number"},
+        "supporting": {"type": "number"},
+        "background": {"type": "number"}
+      }
+    }
+  }
+}

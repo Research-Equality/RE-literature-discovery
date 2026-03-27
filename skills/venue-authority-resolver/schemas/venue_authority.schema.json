@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VenueAuthorityEnrichment",
+  "type": "object",
+  "properties": {
+    "venue": {"type": "string"},
+    "venue_type": {"type": "string"},
+    "peer_reviewed": {"type": "boolean"},
+    "is_preprint": {"type": "boolean"},
+    "ccf_rank": {"type": ["string", "null"]},
+    "core_rank": {"type": ["string", "null"]},
+    "jcr_quartile": {"type": ["string", "null"]},
+    "impact_factor": {"type": ["number", "null"]},
+    "cas_quartile": {"type": ["string", "null"]},
+    "quality_flags": {"type": "array", "items": {"type": "string"}},
+    "caution_flags": {"type": "array", "items": {"type": "string"}}
+  }
+}

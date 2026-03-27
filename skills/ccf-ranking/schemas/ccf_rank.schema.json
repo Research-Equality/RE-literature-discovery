@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CCFRankEnrichment",
+  "type": "object",
+  "properties": {
+    "venue": {"type": "string"},
+    "ccf_rank": {"type": ["string", "null"], "enum": ["A", "B", "C", null]},
+    "core_rank": {"type": ["string", "null"], "enum": ["A*", "A", "B", "C", null]}
+  }
+}

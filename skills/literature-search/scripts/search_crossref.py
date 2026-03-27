@@ -21,6 +21,13 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import time
+from pathlib import Path
+
+AUTHORITY_SCRIPTS = Path(__file__).resolve().parents[2] / "authority-ranking" / "scripts"
+if str(AUTHORITY_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(AUTHORITY_SCRIPTS))
+
+from shared_schema import normalize_paper
 
 CROSSREF_URL = "https://api.crossref.org/works"
 HEADERS = {"User-Agent": "SkillScript/1.0 (mailto:user@example.com)"}
@@ -147,22 +154,28 @@ def item_to_record(item: dict) -> dict:
     cited_by = item.get("is-referenced-by-count", 0)
     bib_type = TYPE_MAPPING.get(item.get("type", ""), "misc")
 
-    return {
-        "title": title,
-        "authors": authors,
-        "year": year,
-        "journal": journal,
-        "doi": doi,
-        "abstract": abstract,
-        "type": bib_type,
-        "score": score,
-        "cited_by": cited_by,
-        "volume": item.get("volume", ""),
-        "issue": item.get("issue", ""),
-        "pages": item.get("page", ""),
-        "publisher": item.get("publisher", ""),
-        "booktitle": journal,
-    }
+    return normalize_paper(
+        {
+            "title": title,
+            "authors": authors,
+            "year": year,
+            "journal": journal,
+            "venue": journal,
+            "doi": doi,
+            "abstract": abstract,
+            "type": item.get("type", ""),
+            "score": score,
+            "cited_by": cited_by,
+            "citation_count": cited_by,
+            "peer_reviewed": item.get("type") in {"journal-article", "proceedings-article"},
+            "volume": item.get("volume", ""),
+            "issue": item.get("issue", ""),
+            "pages": item.get("page", ""),
+            "publisher": item.get("publisher", ""),
+            "booktitle": journal,
+            "source": "crossref",
+        }
+    )
 
 
 def record_to_bibtex(record: dict, key: str) -> str:

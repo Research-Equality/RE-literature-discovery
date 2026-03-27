@@ -17,6 +17,13 @@ import argparse
 import json
 import os
 import sys
+from pathlib import Path
+
+AUTHORITY_SCRIPTS = Path(__file__).resolve().parents[2] / "authority-ranking" / "scripts"
+if str(AUTHORITY_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(AUTHORITY_SCRIPTS))
+
+from shared_schema import normalize_paper
 
 
 def load_any_json(path: str):
@@ -82,26 +89,32 @@ def normalize_arxiv_database(record: dict) -> dict:
     """Map arxiv-database JSON records into the shared paper schema."""
     published = record.get("published", "")
     year = parse_year(record.get("year"), published)
-    return {
-        "arxiv_id": record.get("arxiv_id", ""),
-        "doi": record.get("doi", ""),
-        "title": record.get("title", ""),
-        "authors": split_authors(record.get("authors", [])),
-        "abstract": record.get("abstract", ""),
-        "year": year,
-        "published": published,
-        "updated": record.get("updated", ""),
-        "venue": record.get("journal_ref") or "arXiv",
-        "venue_normalized": record.get("journal_ref") or "arXiv",
-        "peer_reviewed": False,
-        "citationCount": 0,
-        "categories": record.get("categories", []),
-        "primary_category": record.get("primary_category", ""),
-        "comment": record.get("comment", ""),
-        "url": record.get("abs_url", ""),
-        "pdf_url": record.get("pdf_url", ""),
-        "source": "arxiv",
-    }
+    return normalize_paper(
+        {
+            "paper_id": f"arxiv:{record.get('arxiv_id', '')}" if record.get("arxiv_id") else "",
+            "arxiv_id": record.get("arxiv_id", ""),
+            "doi": record.get("doi", ""),
+            "title": record.get("title", ""),
+            "authors": split_authors(record.get("authors", [])),
+            "abstract": record.get("abstract", ""),
+            "year": year,
+            "published": published,
+            "updated": record.get("updated", ""),
+            "venue": record.get("journal_ref") or "arXiv",
+            "venue_normalized": record.get("journal_ref") or "arXiv",
+            "venue_type": "preprint",
+            "peer_reviewed": False,
+            "is_preprint": True,
+            "citationCount": 0,
+            "citation_count": 0,
+            "categories": record.get("categories", []),
+            "primary_category": record.get("primary_category", ""),
+            "comment": record.get("comment", ""),
+            "url": record.get("abs_url", ""),
+            "pdf_url": record.get("pdf_url", ""),
+            "source": "arxiv",
+        }
+    )
 
 
 def normalize_biorxiv_database(record: dict) -> dict:
@@ -112,24 +125,30 @@ def normalize_biorxiv_database(record: dict) -> dict:
     url = record.get("html_url", "")
     if not url and doi:
         url = f"https://doi.org/{doi}"
-    return {
-        "doi": doi,
-        "title": record.get("title", ""),
-        "authors": split_authors(record.get("authors", "")),
-        "abstract": record.get("abstract", ""),
-        "year": year,
-        "published": publication_date,
-        "publicationDate": publication_date,
-        "venue": "bioRxiv",
-        "venue_normalized": "bioRxiv",
-        "peer_reviewed": False,
-        "citationCount": 0,
-        "category": record.get("category", ""),
-        "version": record.get("version", ""),
-        "url": url,
-        "pdf_url": record.get("pdf_url", ""),
-        "source": "biorxiv",
-    }
+    return normalize_paper(
+        {
+            "paper_id": f"doi:{doi.lower()}" if doi else "",
+            "doi": doi,
+            "title": record.get("title", ""),
+            "authors": split_authors(record.get("authors", "")),
+            "abstract": record.get("abstract", ""),
+            "year": year,
+            "published": publication_date,
+            "publicationDate": publication_date,
+            "venue": "bioRxiv",
+            "venue_normalized": "bioRxiv",
+            "venue_type": "preprint",
+            "peer_reviewed": False,
+            "is_preprint": True,
+            "citationCount": 0,
+            "citation_count": 0,
+            "category": record.get("category", ""),
+            "version": record.get("version", ""),
+            "url": url,
+            "pdf_url": record.get("pdf_url", ""),
+            "source": "biorxiv",
+        }
+    )
 
 
 NORMALIZERS = {

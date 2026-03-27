@@ -15,6 +15,13 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+from pathlib import Path
+
+AUTHORITY_SCRIPTS = Path(__file__).resolve().parents[2] / "authority-ranking" / "scripts"
+if str(AUTHORITY_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(AUTHORITY_SCRIPTS))
+
+from shared_schema import normalize_paper
 
 S2_API = "https://api.semanticscholar.org/graph/v1"
 FIELDS = "title,authors,abstract,year,venue,citationCount,externalIds,url,referenceCount,publicationDate"
@@ -134,23 +141,29 @@ def parse_paper(data: dict) -> dict | None:
     venue = data.get("venue", "") or ""
     reviewed = is_peer_reviewed(venue)
 
-    return {
-        "paperId": data.get("paperId", ""),
-        "arxiv_id": arxiv_id,
-        "title": data["title"],
-        "authors": authors,
-        "abstract": " ".join(abstract.split()),
-        "year": data.get("year"),
-        "venue": venue,
-        "venue_normalized": normalize_venue(venue),
-        "peer_reviewed": reviewed,
-        "citationCount": data.get("citationCount", 0) or 0,
-        "referenceCount": data.get("referenceCount", 0) or 0,
-        "url": data.get("url", ""),
-        "publicationDate": data.get("publicationDate", ""),
-        "pdf_url": pdf_url,
-        "source": "semantic_scholar",
-    }
+    return normalize_paper(
+        {
+            "paperId": data.get("paperId", ""),
+            "paper_id": data.get("paperId", ""),
+            "arxiv_id": arxiv_id,
+            "title": data["title"],
+            "authors": authors,
+            "abstract": " ".join(abstract.split()),
+            "year": data.get("year"),
+            "venue": venue,
+            "venue_normalized": normalize_venue(venue),
+            "venue_type": "conference" if reviewed else "",
+            "peer_reviewed": reviewed,
+            "citationCount": data.get("citationCount", 0) or 0,
+            "citation_count": data.get("citationCount", 0) or 0,
+            "referenceCount": data.get("referenceCount", 0) or 0,
+            "url": data.get("url", ""),
+            "publicationDate": data.get("publicationDate", ""),
+            "pdf_url": pdf_url,
+            "doi": external_ids.get("DOI", ""),
+            "source": "semantic_scholar",
+        }
+    )
 
 
 def search_papers(

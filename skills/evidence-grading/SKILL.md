@@ -1,49 +1,52 @@
 ---
 name: evidence-grading
-description: Grade evidence strength for papers or claims based on study design, replication, venue, and recency. Use when deciding how strongly to trust a finding or how cautiously to phrase a claim, not for discovery or bibliography management.
-argument-hint: [claim-or-corpus]
+description: Grade evidence strength for papers or claims using study-design and validation signals while reading authority-aware metadata as context. Use after authority-ranking when you need calibrated writing, and do not treat venue prestige as evidence strength.
+argument-hint: [paper-db-or-claim]
 ---
 
 # Evidence Grading
 
-Estimate how much confidence a reader should place in a paper or claim.
+This skill calibrates how strongly a result should be trusted or stated in prose.
 
-## Repository Role
+## Responsibilities
 
-This is a trust-calibration skill.
+- write `evidence_score`
+- write `evidence_label`
+- add caution flags such as `high_authority_low_evidence`
+- support claim wording in reviews, related work, and surveys
 
-- Use it when writing needs calibrated language, not just citation counts
-- Use it after you already know which papers or claims matter
-- It supports both literature synthesis and final manuscript phrasing
+## Important Rule
 
-## Do Not Use This Skill For
+Authority and evidence are not the same thing.
 
-- searching for papers from scratch
-- full review generation
-- cite-key or `.bib` maintenance
+- `authority-ranking` uses venue and metadata signals to prioritize reading and selection
+- `evidence-grading` uses design and validation signals to calibrate trust
 
-## Shared Inputs and Outputs
+High-prestige venues can still contain exploratory evidence. Strong evidence can also appear outside the highest-prestige venues.
 
-Preferred inputs:
+## Inputs
 
-- `outputs/<topic-slug>/paper_db.jsonl`
-- optional claim registry, contradiction report, or consensus map
+- ranked `outputs/<topic-slug>/paper_db.jsonl`
+- optional claim tables or contradiction maps
 
-Preferred outputs:
+## Outputs
 
-- `outputs/<topic-slug>/analysis/evidence_grades.md`
-- `outputs/<topic-slug>/analysis/claim_strength.md`
+- `outputs/<topic-slug>/paper_db.evidence.jsonl`
+- optional `outputs/<topic-slug>/analysis/evidence_summary.md`
 
-## Workflow
+## Script
 
-1. Define the grading rubric appropriate to the domain
-2. Grade papers or claims using design quality, replication status, recency, and venue context
-3. Penalize unresolved contradictions and unsupported extrapolation
-4. Map grades to writing guidance such as strong claim / cautious claim / speculative claim
-5. Feed the grades into literature review and manuscript writing
+```bash
+python skills/evidence-grading/scripts/grade_evidence.py \
+  --input outputs/<topic-slug>/paper_db.jsonl \
+  --output outputs/<topic-slug>/paper_db.evidence.jsonl \
+  --summary outputs/<topic-slug>/analysis/evidence_summary.md
+```
+
+If you want refreshed final scores that include the new `evidence_score`, run `authority-ranking` again after this step.
 
 ## Related Skills
 
-- Upstream: [literature-review](../literature-review/), [systematic-review](../systematic-review/)
-- Companion: [claim-tracker](../claim-tracker/), [consensus-mapping](../consensus-mapping/), [contradiction-detection](../contradiction-detection/)
-- Downstream: [related-work-writing](../related-work-writing/), [survey-generation](../survey-generation/)
+- Upstream: [authority-ranking](../authority-ranking/), [paper-quality-filter](../paper-quality-filter/)
+- Companions: [claim-tracker](../claim-tracker/), [consensus-mapping](../consensus-mapping/), [contradiction-detection](../contradiction-detection/)
+- Downstream: [literature-review](../literature-review/), [related-work-writing](../related-work-writing/), [survey-generation](../survey-generation/)
