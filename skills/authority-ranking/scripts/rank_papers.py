@@ -30,7 +30,7 @@ VENUE_TYPE_SCORES = {
     "other": 0.4,
 }
 STOPWORDS = {"a", "an", "and", "for", "in", "of", "on", "the", "to", "with"}
-FRONTIER_FLAGS = {"preprint_only", "high_authority_low_evidence", "weak_metadata"}
+FRONTIER_FLAGS = {"preprint_only", "high_authority_low_evidence"}
 
 
 def tokenize(text: str) -> set[str]:

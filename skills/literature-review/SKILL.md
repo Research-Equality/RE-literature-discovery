@@ -10,7 +10,8 @@ This skill turns a ranked corpus into a coherent review bundle.
 
 ## Recommended Inputs
 
-- `outputs/<topic-slug>/paper_db.jsonl` or `paper_db.evidence.jsonl`
+- canonical `outputs/<topic-slug>/paper_db.jsonl`
+- optional intermediate `paper_db.evidence.jsonl` before reranking
 - optional `references.bib`
 - optional synthesis notes from `systematic-review`
 
@@ -29,12 +30,28 @@ Prefer a corpus that already includes:
 
 Do not treat high authority as a substitute for evidence. When authority is high but evidence is exploratory, write with caution.
 
+## Built-In Analysis Modes
+
+This skill now subsumes the repo's lighter analysis patterns. Use it when you need any of the following without routing to a separate top-level skill:
+
+- cross-paper comparison tables and synthesis notes
+- consensus versus contested-claim mapping
+- contradiction tracking
+- claim-level provenance notes
+- gap analysis and positioning
+
 ## Outputs
 
 - `outputs/<topic-slug>/review/review_outline.md`
 - `outputs/<topic-slug>/review/review.md`
 - `outputs/<topic-slug>/review/evidence_table.md`
+- `outputs/<topic-slug>/review/comparison_table.md`
+- `outputs/<topic-slug>/review/consensus_map.md`
+- `outputs/<topic-slug>/review/contradictions.md`
+- `outputs/<topic-slug>/review/claim_registry.md`
 - `outputs/<topic-slug>/review/gaps.md`
+
+Read `references/analysis-modes.md` when the task is more analytical than narrative.
 
 ## Related Skills
 

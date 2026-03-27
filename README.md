@@ -6,7 +6,7 @@ An authoritative skills repository for literature discovery, authority-aware ran
 
 The repository is organized around one synchronized workflow:
 
-`literature-search -> venue-authority-resolver -> paper-quality-filter -> authority-ranking -> evidence-grading -> literature-review/systematic-review -> related-work-writing/survey-generation`
+`literature-search -> venue-authority-resolver -> paper-quality-filter -> authority-ranking -> evidence-grading -> authority-ranking -> literature-review/systematic-review -> related-work-writing/survey-generation`
 
 ## Positioning
 
@@ -41,9 +41,10 @@ It also writes:
 - `outputs/<topic-slug>/analysis/ranking_report.md`
 - `outputs/<topic-slug>/analysis/resolution_audit.jsonl`
 
-### 4. Evidence and Writing
+### 4. Evidence, Reranking, and Writing
 
 - `evidence-grading` reads authority metadata but does not equate venue prestige with evidence strength
+- after `evidence-grading`, re-run `authority-ranking` so `final_score` and `selection_bucket` stay canonical
 - `related-work-writing` and `survey-generation` use bucket-aware tone control:
   - `core`: canonical / backbone
   - `supporting`: comparative / supportive
@@ -56,9 +57,9 @@ Frontier papers must never be written as established consensus.
 ### Discovery and Workflow
 
 - `literature-search`
+- `evidence-grading`
 - `literature-review`
 - `systematic-review`
-- `citation-management`
 - `related-work-writing`
 - `survey-generation`
 
@@ -77,18 +78,20 @@ Frontier papers must never be written as established consensus.
 - `biorxiv-database`
 - `openalex-database`
 - `pubmed-database`
+- `citation-management`
 - `pyzotero`
 
-### Monitoring and Corpus Analysis
+## Embedded Analysis Modes
 
-- `arxiv-monitor`
-- `citation-graph`
-- `gap-detection`
-- `claim-tracker`
-- `consensus-mapping`
-- `contradiction-detection`
-- `cross-paper-synthesis`
-- `evidence-grading`
+This repository no longer keeps doc-only analysis skills as separate top-level routes.
+
+The following capabilities are now embedded into `literature-review` and `systematic-review` as built-in analysis modes:
+
+- comparison tables and cross-paper synthesis
+- consensus versus contested-claim mapping
+- contradiction and claim tracking
+- gap detection and positioning
+- citation-graph expansion and ongoing arXiv monitoring
 
 See [`skills/README.md`](skills/README.md) for the catalog.
 
@@ -115,6 +118,7 @@ The full JSON schema lives in [`skills/authority-ranking/schemas/paper_record.sc
 - `outputs/<topic-slug>/paper_db.evidence.jsonl`
 - `outputs/<topic-slug>/analysis/ranking_report.md`
 - `outputs/<topic-slug>/analysis/resolution_audit.jsonl`
+- `outputs/<topic-slug>/analysis/evidence_summary.md`
 - `outputs/<topic-slug>/research_log.md`
 - `outputs/<topic-slug>/findings.md`
 - `references.bib`
@@ -135,5 +139,6 @@ When loading it there, treat this repository's [`skills/`](skills/) directory as
 ## Curation Rules
 
 - a skill must directly support literature discovery, authority-aware ranking, evidence synthesis, citation work, or survey writing
+- analysis patterns that do not need independent scripts should live inside `literature-review` or `systematic-review` references rather than as separate top-level skills
 - experiment, implementation, formatting, or presentation skills should not live here
 - prefer scriptable and auditable workflows

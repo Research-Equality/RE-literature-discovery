@@ -17,6 +17,6 @@ Frontier papers must not be written as established consensus.
 ```bash
 python skills/related-work-writing/scripts/draft_related_work.py \
   --topic "TOPIC" \
-  --input outputs/<topic-slug>/paper_db.evidence.jsonl \
+  --input outputs/<topic-slug>/paper_db.jsonl \
   --output outputs/<topic-slug>/writing/related_work.md
 ```

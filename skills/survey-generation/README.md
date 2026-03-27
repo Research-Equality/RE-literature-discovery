@@ -14,6 +14,6 @@ Planning helper:
 ```bash
 python skills/survey-generation/scripts/plan_bucketed_survey.py \
   --topic "TOPIC" \
-  --input outputs/<topic-slug>/paper_db.evidence.jsonl \
+  --input outputs/<topic-slug>/paper_db.jsonl \
   --output outputs/<topic-slug>/survey/writing_guidance.md
 ```

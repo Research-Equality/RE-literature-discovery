@@ -13,12 +13,13 @@ Use this skill to enrich paper metadata without assigning final scores.
 - normalize venue metadata into the shared paper schema
 - call the CCF and journal metric resolvers
 - write shared audit fields such as `source_of_truth`, `resolved_from`, and `match_confidence`
-- add authority-related caution flags for downstream ranking and writing
+- surface raw authority-resolution warnings for downstream ranking and writing
 
 ## Do Not Use This Skill For
 
 - final ranking
 - evidence grading
+- deriving `weak_metadata` or keep/drop policy
 - drafting prose
 
 ## Script

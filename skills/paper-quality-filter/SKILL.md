@@ -16,6 +16,8 @@ Use this skill to turn authority metadata into auditable keep/drop signals befor
 - optionally exclude papers by peer-review or preprint policy
 - preserve records for later writing when you only want caution labels
 
+`weak_metadata` means structural metadata weakness such as missing abstract/year/venue or a near-total lack of authority signals. It must not be used as a synonym for "one authority resolver did not match".
+
 ## Script
 
 ```bash

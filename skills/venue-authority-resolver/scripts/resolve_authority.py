@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Resolve venue authority metadata without assigning final scores."""
+"""Resolve venue authority metadata without assigning final scores or quality buckets."""
 
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ def resolve_records(
     journal_open_fallback: str | None = None,
     journal_local_override: str | None = None,
 ) -> list[dict]:
-    """Resolve venue-type, review status, CCF rank, and journal metrics."""
+    """Resolve venue metadata and authority-source provenance."""
     normalized = [normalize_paper(record) for record in records]
     normalized = enrich_ccf_records(normalized, snapshot_file=ccf_snapshot, aliases_file=ccf_aliases)
     normalized = enrich_journal_metric_records(
@@ -43,20 +43,12 @@ def resolve_records(
         caution_flags = ensure_list(paper.get("caution_flags"))
         quality_flags = ensure_list(paper.get("quality_flags"))
 
-        if paper.get("is_preprint") and "preprint" not in caution_flags:
-            caution_flags.append("preprint")
-        if paper.get("peer_reviewed") and "peer_reviewed" not in quality_flags:
-            quality_flags.append("peer_reviewed")
         if paper.get("ccf_rank"):
             quality_flags.append(f"ccf:{paper['ccf_rank']}")
         if paper.get("jcr_quartile"):
             quality_flags.append(f"jcr:{paper['jcr_quartile']}")
         if paper.get("cas_quartile"):
             quality_flags.append(f"cas:{paper['cas_quartile']}")
-        if paper.get("is_preprint") and not paper.get("peer_reviewed"):
-            caution_flags.append("preprint_only")
-        if not paper.get("venue") or not paper.get("year") or paper.get("ccf_match_type") == "unresolved":
-            caution_flags.append("weak_metadata")
         if paper.get("ccf_warnings"):
             caution_flags.extend(paper["ccf_warnings"])
         if paper.get("journal_metric_warnings"):

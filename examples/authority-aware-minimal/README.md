@@ -7,8 +7,9 @@ This example shows the intended chain:
 3. authority enrichment
 4. ranking
 5. evidence grading
-6. related work draft
-7. ranking audit and survey writing guidance
+6. reranking after evidence
+7. related work draft
+8. ranking audit and survey writing guidance
 
 ## Live Search Path
 
@@ -33,6 +34,7 @@ python skills/evidence-grading/scripts/grade_evidence.py \
   --output outputs/authority-demo/paper_db.evidence.jsonl \
   --summary outputs/authority-demo/analysis/evidence_summary.md
 
+# re-run ranking so final_score and selection_bucket stay canonical
 python skills/authority-ranking/scripts/rank_papers.py \
   --input outputs/authority-demo/paper_db.evidence.jsonl \
   --output outputs/authority-demo/paper_db.jsonl \
@@ -69,6 +71,7 @@ python skills/evidence-grading/scripts/grade_evidence.py \
   --input outputs/authority-offline/paper_db.jsonl \
   --output outputs/authority-offline/paper_db.evidence.jsonl
 
+# re-run ranking so final_score and selection_bucket stay canonical
 python skills/authority-ranking/scripts/rank_papers.py \
   --input outputs/authority-offline/paper_db.evidence.jsonl \
   --output outputs/authority-offline/paper_db.jsonl \

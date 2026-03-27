@@ -6,7 +6,7 @@
 
 仓库围绕一条完全同步的主链组织：
 
-`literature-search -> venue-authority-resolver -> paper-quality-filter -> authority-ranking -> evidence-grading -> literature-review/systematic-review -> related-work-writing/survey-generation`
+`literature-search -> venue-authority-resolver -> paper-quality-filter -> authority-ranking -> evidence-grading -> authority-ranking -> literature-review/systematic-review -> related-work-writing/survey-generation`
 
 ## 定位
 
@@ -41,9 +41,10 @@
 - `outputs/<topic-slug>/analysis/ranking_report.md`
 - `outputs/<topic-slug>/analysis/resolution_audit.jsonl`
 
-### 4. 证据与写作
+### 4. 证据、重排与写作
 
 - `evidence-grading` 会读取 authority metadata，但不会把 venue prestige 直接等同于 evidence strength
+- `evidence-grading` 之后必须再跑一次 `authority-ranking`，保证 `final_score` 与 `selection_bucket` 仍然是权威结果
 - `related-work-writing` 与 `survey-generation` 使用 bucket-aware 语气控制：
   - `core`: canonical / backbone
   - `supporting`: comparative / supportive
@@ -56,9 +57,9 @@ Frontier paper 不允许写成 established consensus。
 ### 发现与主工作流
 
 - `literature-search`
+- `evidence-grading`
 - `literature-review`
 - `systematic-review`
-- `citation-management`
 - `related-work-writing`
 - `survey-generation`
 
@@ -77,18 +78,20 @@ Frontier paper 不允许写成 established consensus。
 - `biorxiv-database`
 - `openalex-database`
 - `pubmed-database`
+- `citation-management`
 - `pyzotero`
 
-### 监控与语料分析
+## 内嵌分析模式
 
-- `arxiv-monitor`
-- `citation-graph`
-- `gap-detection`
-- `claim-tracker`
-- `consensus-mapping`
-- `contradiction-detection`
-- `cross-paper-synthesis`
-- `evidence-grading`
+仓库不再把只有说明、没有独立实现的分析类能力保留为单独顶层 skill。
+
+下面这些能力已经并入 `literature-review` 和 `systematic-review` 的内置分析模式：
+
+- comparison table 与 cross-paper synthesis
+- consensus / contested claim mapping
+- contradiction 与 claim tracking
+- gap detection 与 positioning
+- citation-graph expansion 与持续 arXiv monitoring
 
 技能目录见 [`skills/README.md`](skills/README.md)。
 
@@ -115,6 +118,7 @@ Frontier paper 不允许写成 established consensus。
 - `outputs/<topic-slug>/paper_db.evidence.jsonl`
 - `outputs/<topic-slug>/analysis/ranking_report.md`
 - `outputs/<topic-slug>/analysis/resolution_audit.jsonl`
+- `outputs/<topic-slug>/analysis/evidence_summary.md`
 - `outputs/<topic-slug>/research_log.md`
 - `outputs/<topic-slug>/findings.md`
 - `references.bib`
@@ -135,5 +139,6 @@ Frontier paper 不允许写成 established consensus。
 ## 收录原则
 
 - skill 必须直接服务于文献发现、authority-aware 排序、证据整合、引用治理或综述写作
+- 如果某个分析模式不需要独立脚本或独立数据契约，应优先并入 `literature-review` 或 `systematic-review` 的 references，而不是继续保留单独顶层 skill
 - 实验、实现、排版、演示类 skill 不应放在这里
 - 优先保留可脚本化、可审计的工作流

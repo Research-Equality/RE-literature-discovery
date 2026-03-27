@@ -39,6 +39,6 @@ What remains unresolved, contradictory, or weakly evidenced?
 Track which downstream artifact should consume these findings next:
 
 - `literature-review`
-- `cross-paper-synthesis`
+- `literature-review` analysis modes
 - `related-work-writing`
 - `survey-generation`

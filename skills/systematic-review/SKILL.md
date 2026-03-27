@@ -19,10 +19,11 @@ This is the repository's heaviest orchestration skill.
 
 ## Authority-Aware Update
 
-Phase 2 must now produce three corpus files:
+Phase 2 must now produce four canonical artifacts:
 
 - `outputs/{topic-slug}/paper_db.raw.jsonl`
 - `outputs/{topic-slug}/paper_db.triaged.jsonl`
+- `outputs/{topic-slug}/paper_db.evidence.jsonl`
 - canonical ranked `outputs/{topic-slug}/paper_db.jsonl`
 
 Recommended sequence inside Phase 2:
@@ -33,17 +34,28 @@ Recommended sequence inside Phase 2:
 4. resolve venue authority metadata
 5. attach quality flags
 6. rank with `authority-ranking`
-7. optionally grade evidence and refresh ranking
+7. grade evidence
+8. refresh ranking with the evidence-enriched corpus
 
 ## Shared Handoff Files
 
 - `outputs/{topic-slug}/paper_db.jsonl`
+- `outputs/{topic-slug}/analysis/evidence_summary.md`
 - `outputs/{topic-slug}/phase5_synthesis/`
 - `outputs/{topic-slug}/phase6_report/references.bib`
 
 ## Phase Gate
 
-Do not enter Phase 3 until `paper_db.jsonl` exists and is authority-ranked.
+Do not enter Phase 3 until `paper_db.jsonl` exists, has passed the evidence pass, and has been reranked.
+
+## Embedded Maintenance Modes
+
+This skill now absorbs the repository's corpus-maintenance patterns:
+
+- citation-graph expansion and reading-gap discovery
+- ongoing arXiv monitoring for a defined topic
+
+Use `references/corpus-maintenance.md` when the task is incremental monitoring or corpus expansion rather than first-pass search.
 
 ## Core Commands
 

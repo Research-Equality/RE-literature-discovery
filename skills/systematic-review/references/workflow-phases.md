@@ -47,22 +47,31 @@ python skills/literature-search/scripts/search_openalex.py \
 Then:
 
 ```bash
-python skills/systematic-review/scripts/paper_db.py merge \
+python skills/literature-search/scripts/prepare_corpus.py \
+  --query "TOPIC" \
   --inputs outputs/{slug}/phase1_frontier/search_results/s2_frontier.jsonl \
   outputs/{slug}/phase2_survey/search_results/s2.jsonl \
   outputs/{slug}/phase2_survey/search_results/openalex.jsonl \
-  --output outputs/{slug}/paper_db.jsonl
+  --merged-output outputs/{slug}/paper_db.raw.jsonl \
+  --triaged-output outputs/{slug}/paper_db.triaged.jsonl \
+  --authority-output outputs/{slug}/paper_db.jsonl \
+  --profile cs
 
-python skills/systematic-review/scripts/paper_db.py filter \
+python skills/evidence-grading/scripts/grade_evidence.py \
   --input outputs/{slug}/paper_db.jsonl \
+  --output outputs/{slug}/paper_db.evidence.jsonl \
+  --summary outputs/{slug}/analysis/evidence_summary.md
+
+python skills/authority-ranking/scripts/rank_papers.py \
+  --input outputs/{slug}/paper_db.evidence.jsonl \
   --output outputs/{slug}/paper_db.jsonl \
-  --min-score 0.80 \
-  --max-papers 70
+  --query "TOPIC" \
+  --profile cs
 ```
 
 Gate to Phase 3:
 - `phase2_survey/survey.md` exists
-- `paper_db.jsonl` is curated down to 35-80 papers
+- `paper_db.jsonl` is curated down to 35-80 papers and already reranked after evidence grading
 
 ## Phase 3: Deep Dive
 
@@ -131,6 +140,8 @@ Expected content:
 - historical trajectory
 - contradictions or evaluation weaknesses
 - gaps and open problems
+
+These synthesis outputs now subsume the old standalone analysis routes for comparison tables, contradiction notes, consensus mapping, and gap detection.
 
 Gate to Phase 6:
 - both synthesis files exist and are substantive

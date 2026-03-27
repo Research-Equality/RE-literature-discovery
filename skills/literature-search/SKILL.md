@@ -23,7 +23,9 @@ This skill no longer owns final ranking logic. `authority-ranking` is the only l
 - `outputs/<topic-slug>/search_results/<source>.jsonl`
 - `outputs/<topic-slug>/paper_db.raw.jsonl`
 - `outputs/<topic-slug>/paper_db.triaged.jsonl`
-- `outputs/<topic-slug>/paper_db.jsonl`
+- initial authority-ranked `outputs/<topic-slug>/paper_db.jsonl`
+
+After `evidence-grading`, re-run `authority-ranking` to refresh the canonical `paper_db.jsonl`.
 
 ## Recommended Flow
 
@@ -34,6 +36,7 @@ This skill no longer owns final ranking logic. `authority-ranking` is the only l
 5. call `venue-authority-resolver`
 6. call `paper-quality-filter`
 7. call `authority-ranking`
+8. later, after `evidence-grading`, refresh ranking again
 
 ## Scripts
 

@@ -30,6 +30,16 @@ def apply_quality_filter(
         quality_flags = ensure_list(paper.get("quality_flags"))
 
         weak_metadata = False
+        has_authority_signal = any(
+            [
+                bool(paper.get("peer_reviewed")),
+                bool(paper.get("is_preprint")),
+                bool(paper.get("ccf_rank")),
+                bool(paper.get("jcr_quartile")),
+                bool(paper.get("cas_quartile")),
+                paper.get("impact_factor") is not None,
+            ]
+        )
         if not paper.get("abstract"):
             caution_flags.append("missing_abstract")
             weak_metadata = True
@@ -53,9 +63,7 @@ def apply_quality_filter(
             quality_flags.append("q1_journal")
         if (paper.get("year") or 0) >= 2024:
             quality_flags.append("recent")
-        if paper.get("ccf_match_type") == "unresolved" and paper.get("venue_type") == "conference":
-            weak_metadata = True
-        if paper.get("venue_type") == "journal" and not paper.get("metric_source"):
+        if not has_authority_signal:
             weak_metadata = True
         if weak_metadata:
             caution_flags.append("weak_metadata")
