@@ -11,6 +11,7 @@ Usage:
 
 import argparse
 import json
+import os
 import sys
 import time
 import urllib.parse
@@ -322,6 +323,7 @@ def main():
     parser.add_argument("--references-of", help="Get papers referenced by this paper ID")
     parser.add_argument("--output", "-o", help="Output file (default: stdout)")
     args = parser.parse_args()
+    api_key = args.api_key or os.getenv("S2_API_KEY")
 
     if args.list_conferences:
         print("Recognized top conferences:")
@@ -335,9 +337,9 @@ def main():
         venue_filter = list(TOP_CONFERENCES)
 
     if args.citations_of:
-        papers = get_citations(args.citations_of, args.max_results, args.api_key)
+        papers = get_citations(args.citations_of, args.max_results, api_key)
     elif args.references_of:
-        papers = get_references(args.references_of, args.max_results, args.api_key)
+        papers = get_references(args.references_of, args.max_results, api_key)
     else:
         papers = search_papers(
             query=args.query,
@@ -346,7 +348,7 @@ def main():
             min_citations=args.min_citations,
             venue_filter=venue_filter,
             peer_reviewed_only=args.peer_reviewed_only,
-            api_key=args.api_key,
+            api_key=api_key,
         )
 
     out = open(args.output, "w") if args.output else sys.stdout

@@ -12,6 +12,7 @@ Usage:
 
 import argparse
 import json
+import os
 import sys
 import time
 import urllib.parse
@@ -28,12 +29,19 @@ from shared_schema import normalize_paper
 OPENALEX_API = "https://api.openalex.org"
 
 
-def openalex_request(url: str) -> dict:
-    """Make a request to OpenAlex API with retry logic."""
-    headers = {
-        "User-Agent": "research-engine/1.0 (mailto:research@example.com)",
+def build_headers(email: str = "") -> dict:
+    user_agent = "research-engine/1.0"
+    if email:
+        user_agent += f" (mailto:{email})"
+    return {
+        "User-Agent": user_agent,
         "Accept": "application/json",
     }
+
+
+def openalex_request(url: str, email: str = "") -> dict:
+    """Make a request to OpenAlex API with retry logic."""
+    headers = build_headers(email)
     req = urllib.request.Request(url, headers=headers)
 
     for attempt in range(3):
@@ -141,6 +149,7 @@ def search_works(
     min_citations: int = 0,
     work_type: str | None = None,
     sort: str = "cited_by_count:desc",
+    email: str = "",
 ) -> list[dict]:
     """Search OpenAlex works and return parsed results."""
     all_papers = []
@@ -165,13 +174,15 @@ def search_works(
             "page": page,
             "sort": sort,
         }
+        if email:
+            params["mailto"] = email
         if filters:
             params["filter"] = ",".join(filters)
 
         url = f"{OPENALEX_API}/works?{urllib.parse.urlencode(params)}"
 
         try:
-            resp = openalex_request(url)
+            resp = openalex_request(url, email=email)
         except Exception as e:
             print(f"Warning: search failed at page {page}: {e}", file=sys.stderr)
             break
@@ -206,8 +217,10 @@ def main():
     parser.add_argument("--year-range", help="Year range filter (e.g. 2020-2026)")
     parser.add_argument("--type", help="Work type filter (e.g. article, proceedings-article)")
     parser.add_argument("--sort", default="cited_by_count:desc", help="Sort order")
+    parser.add_argument("--email", help="OpenAlex polite-pool email (optional)")
     parser.add_argument("--output", "-o", help="Output file (default: stdout)")
     args = parser.parse_args()
+    email = args.email or os.getenv("OPENALEX_EMAIL", "")
 
     papers = search_works(
         query=args.query,
@@ -216,6 +229,7 @@ def main():
         min_citations=args.min_citations,
         work_type=args.type,
         sort=args.sort,
+        email=email,
     )
 
     out = open(args.output, "w") if args.output else sys.stdout

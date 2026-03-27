@@ -1,6 +1,12 @@
 ---
 name: openalex-database
 description: Advanced OpenAlex querying for author, institution, source, citation, and bibliometric analysis. Use when you need OpenAlex-specific entity or trend analysis. For ordinary multi-source paper discovery, prefer literature-search.
+requires:
+  env:
+    - name: OPENALEX_EMAIL
+      required: false
+      secret: false
+      description: Recommended email for OpenAlex polite pool and higher rate limits.
 license: Unknown
 metadata:
     skill-author: K-Dense Inc.
@@ -47,6 +53,7 @@ uv pip install requests
 ```
 
 No API key required - OpenAlex is completely open.
+Set `OPENALEX_EMAIL` if you want ResearchClaw or shell workflows to preload the polite-pool email automatically.
 
 ## Core Capabilities
 

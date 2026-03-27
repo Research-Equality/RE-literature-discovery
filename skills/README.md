@@ -33,90 +33,56 @@
 - `outputs/<topic-slug>/survey/`
 - `references.bib`
 
+## Environment Contract
+
+需要外部配置的 skill 必须在 `SKILL.md` frontmatter 中声明 `requires.env`。
+
+| Variable | Skills | Required | Purpose |
+| --- | --- | --- | --- |
+| `S2_API_KEY` | `literature-search`, `systematic-review`, `citation-management` | No | Semantic Scholar higher rate limits |
+| `OPENALEX_EMAIL` | `literature-search`, `openalex-database` | No | OpenAlex polite-pool requests |
+| `CROSSREF_EMAIL` | `literature-search` | No | Crossref User-Agent contact email |
+| `NCBI_API_KEY` | `pubmed-database` | No | PubMed higher rate limits |
+| `NCBI_EMAIL` | `pubmed-database` | No | PubMed workflow contact email |
+| `ZOTERO_LIBRARY_ID`, `ZOTERO_API_KEY`, `ZOTERO_LIBRARY_TYPE` | `pyzotero` | Yes | Zotero library access |
+
 ## Core Skills
 
-### `literature-search`
+推荐星级说明：
+- `5/5`：默认优先使用，或对大多数文献调研流程都关键
+- `4/5`：强力配套，常用
+- `3/5`：偏专用，按需使用
 
-用途：检索、合并、去重、初筛，并把语料移交给 authority layer。
-
-目录：[`skills/literature-search/`](literature-search/)
-
-### `venue-authority-resolver`
-
-用途：统一 `venue_type`、`peer_reviewed`、`is_preprint`，并接入 CCF 与 journal metrics resolver。
-
-目录：[`skills/venue-authority-resolver/`](venue-authority-resolver/)
-
-### `paper-quality-filter`
-
-用途：生成 `quality_flags` 与 `caution_flags`，并标出 `preprint_only`、`weak_metadata` 等写作风险。
-
-目录：[`skills/paper-quality-filter/`](paper-quality-filter/)
-
-### `authority-ranking`
-
-用途：唯一的 `final_score`、`selection_bucket`、`authority_reason`、`ranking_components` 计算入口。
-
-目录：[`skills/authority-ranking/`](authority-ranking/)
-
-### `evidence-grading`
-
-用途：生成 `evidence_score` 与证据标签，并补 `high_authority_low_evidence` 等 caution flag。
-
-目录：[`skills/evidence-grading/`](evidence-grading/)
-
-### `literature-review`
-
-用途：对已排序语料做主题归纳和证据整合，同时承接 comparison / consensus / contradiction / gap 等分析模式。
-
-目录：[`skills/literature-review/`](literature-review/)
-
-### `systematic-review`
-
-用途：多阶段系统化调研工作区，Phase 2 必须产出 authority-aware corpus、evidence summary 和 ranking audit；citation expansion 与 monitoring 也作为内置模式放在这里。
-
-目录：[`skills/systematic-review/`](systematic-review/)
-
-### `related-work-writing`
-
-用途：按 `core / supporting / frontier` 与 caution flags 控制 Related Work 语气。
-
-目录：[`skills/related-work-writing/`](related-work-writing/)
-
-### `survey-generation`
-
-用途：按 bucket-aware 规则规划和写 survey manuscript。
-
-目录：[`skills/survey-generation/`](survey-generation/)
+| Skill | 功能 | 参考仓库 | 推荐星级 | 目录 |
+| --- | --- | --- | --- | --- |
+| `literature-search` | 检索、合并、去重、初筛，并把语料移交给 authority layer | `agent-research-skills` | `5/5` | [`skills/literature-search/`](literature-search/) |
+| `venue-authority-resolver` | 统一 `venue_type`、`peer_reviewed`、`is_preprint`，并接入 CCF 与 journal metrics resolver | `repository-native` | `5/5` | [`skills/venue-authority-resolver/`](venue-authority-resolver/) |
+| `paper-quality-filter` | 生成 `quality_flags` 与 `caution_flags`，并标出 `preprint_only`、`weak_metadata` 等写作风险 | `repository-native` | `4/5` | [`skills/paper-quality-filter/`](paper-quality-filter/) |
+| `authority-ranking` | 唯一的 `final_score`、`selection_bucket`、`authority_reason`、`ranking_components` 计算入口 | `repository-native` | `5/5` | [`skills/authority-ranking/`](authority-ranking/) |
+| `evidence-grading` | 生成 `evidence_score` 与证据标签，并补 `high_authority_low_evidence` 等 caution flag | `PaperClaw` | `5/5` | [`skills/evidence-grading/`](evidence-grading/) |
+| `literature-review` | 对已排序语料做主题归纳和证据整合，同时承接 comparison / consensus / contradiction / gap 等分析模式 | `agent-research-skills` | `5/5` | [`skills/literature-review/`](literature-review/) |
+| `systematic-review` | 多阶段系统化调研工作区，Phase 2 必须产出 authority-aware corpus、evidence summary 和 ranking audit | `agent-research-skills + AI-research-SKILLs` | `5/5` | [`skills/systematic-review/`](systematic-review/) |
+| `related-work-writing` | 按 `core / supporting / frontier` 与 caution flags 控制 Related Work 语气 | `agent-research-skills + AI-research-SKILLs` | `4/5` | [`skills/related-work-writing/`](related-work-writing/) |
+| `survey-generation` | 按 bucket-aware 规则规划和写 survey manuscript | `agent-research-skills + AI-research-SKILLs` | `4/5` | [`skills/survey-generation/`](survey-generation/) |
 
 ## Authority and Metadata Skills
 
-### `ccf-ranking`
-
-用途：基于官方 snapshot、alias 层和 resolver 的可审计 CCF 解析。
-
-目录：[`skills/ccf-ranking/`](ccf-ranking/)
-
-### `journal-metrics`
-
-用途：基于 source-of-record、open fallback、local override 的可审计期刊指标解析。
-
-目录：[`skills/journal-metrics/`](journal-metrics/)
-
-### `field-ranking-profile`
-
-用途：控制不同领域的 authority-aware ranking 权重和阈值。
-
-目录：[`skills/field-ranking-profile/`](field-ranking-profile/)
+| Skill | 功能 | 参考仓库 | 推荐星级 | 目录 |
+| --- | --- | --- | --- | --- |
+| `ccf-ranking` | 基于官方 snapshot、alias 层和 resolver 的可审计 CCF 解析 | `repository-native` | `5/5` | [`skills/ccf-ranking/`](ccf-ranking/) |
+| `journal-metrics` | 基于 source-of-record、open fallback、local override 的可审计期刊指标解析 | `repository-native` | `4/5` | [`skills/journal-metrics/`](journal-metrics/) |
+| `field-ranking-profile` | 控制不同领域的 authority-aware ranking 权重和阈值 | `repository-native` | `3/5` | [`skills/field-ranking-profile/`](field-ranking-profile/) |
 
 ## Source and Citation Companions
 
-- `arxiv-database`
-- `biorxiv-database`
-- `openalex-database`
-- `pubmed-database`
-- `pyzotero`
-- `citation-management`
+| Skill | 功能 | 参考仓库 | 推荐星级 | 目录 |
+| --- | --- | --- | --- | --- |
+| `arxiv-database` | arXiv 定向检索和下载 | `claude-scientific-skills` | `4/5` | [`skills/arxiv-database/`](arxiv-database/) |
+| `biorxiv-database` | bioRxiv 定向预印本检索 | `claude-scientific-skills` | `3/5` | [`skills/biorxiv-database/`](biorxiv-database/) |
+| `openalex-database` | OpenAlex 来源、作者与 citation metadata 检索 | `claude-scientific-skills` | `4/5` | [`skills/openalex-database/`](openalex-database/) |
+| `pubmed-database` | PubMed / MEDLINE 生物医学检索 | `claude-scientific-skills` | `4/5` | [`skills/pubmed-database/`](pubmed-database/) |
+| `citation-management` | BibTeX 校验、修复与 cite key 管理 | `agent-research-skills + AI-research-SKILLs` | `4/5` | [`skills/citation-management/`](citation-management/) |
+| `pyzotero` | Zotero 库同步、导出与自动化 | `claude-scientific-skills` | `3/5` | [`skills/pyzotero/`](pyzotero/) |
 
 ## Embedded Analysis Modes
 

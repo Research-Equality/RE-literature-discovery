@@ -54,32 +54,43 @@ Frontier papers must never be written as established consensus.
 
 ## Included Skills
 
+Recommendation scale:
+- `5/5`: default or critical for most literature-review workflows
+- `4/5`: strong companion, commonly useful
+- `3/5`: specialized or optional
+
 ### Discovery and Workflow
 
-- `literature-search`
-- `evidence-grading`
-- `literature-review`
-- `systematic-review`
-- `related-work-writing`
-- `survey-generation`
+| Skill | Function | Reference Repo | Recommended |
+| --- | --- | --- | --- |
+| `literature-search` | Default entry point for search, merge, deduplication, and early triage | `agent-research-skills` | `5/5` |
+| `evidence-grading` | Calibrate evidence strength without collapsing it into venue prestige | `PaperClaw` | `5/5` |
+| `literature-review` | Turn a ranked corpus into a focused review bundle with built-in analysis modes | `agent-research-skills` | `5/5` |
+| `systematic-review` | Run the end-to-end review workspace from search to compiled report | `agent-research-skills + AI-research-SKILLs` | `5/5` |
+| `related-work-writing` | Draft one Related Work section with bucket-aware tone control | `agent-research-skills + AI-research-SKILLs` | `4/5` |
+| `survey-generation` | Plan and draft a full survey manuscript from the canonical corpus | `agent-research-skills + AI-research-SKILLs` | `4/5` |
 
 ### Authority and Ranking
 
-- `venue-authority-resolver`
-- `authority-ranking`
-- `ccf-ranking`
-- `journal-metrics`
-- `paper-quality-filter`
-- `field-ranking-profile`
+| Skill | Function | Reference Repo | Recommended |
+| --- | --- | --- | --- |
+| `venue-authority-resolver` | Normalize venue metadata and attach auditable authority provenance | `repository-native` | `5/5` |
+| `authority-ranking` | Compute the repository's single canonical `final_score` and `selection_bucket` | `repository-native` | `5/5` |
+| `ccf-ranking` | Resolve auditable CCF ranks for CS, AI, and security venues | `repository-native` | `5/5` |
+| `journal-metrics` | Resolve journal quartiles and impact metrics through layered sources | `repository-native` | `4/5` |
+| `paper-quality-filter` | Add quality and caution flags before final ranking | `repository-native` | `4/5` |
+| `field-ranking-profile` | Switch ranking weights and thresholds by field | `repository-native` | `3/5` |
 
 ### Databases and Reference Management
 
-- `arxiv-database`
-- `biorxiv-database`
-- `openalex-database`
-- `pubmed-database`
-- `citation-management`
-- `pyzotero`
+| Skill | Function | Reference Repo | Recommended |
+| --- | --- | --- | --- |
+| `arxiv-database` | Run arXiv-specific search and retrieval workflows | `claude-scientific-skills` | `4/5` |
+| `biorxiv-database` | Run bioRxiv-specific preprint search workflows | `claude-scientific-skills` | `3/5` |
+| `openalex-database` | Query OpenAlex for source, author, and citation metadata | `claude-scientific-skills` | `4/5` |
+| `pubmed-database` | Run PubMed and MEDLINE-specific biomedical search workflows | `claude-scientific-skills` | `4/5` |
+| `citation-management` | Validate, repair, and generate BibTeX and cite keys | `agent-research-skills + AI-research-SKILLs` | `4/5` |
+| `pyzotero` | Sync curated corpora with Zotero libraries and exports | `claude-scientific-skills` | `3/5` |
 
 ## Embedded Analysis Modes
 
@@ -130,11 +141,36 @@ The full JSON schema lives in [`skills/authority-ranking/schemas/paper_record.sc
 
 See [`examples/authority-aware-minimal/README.md`](examples/authority-aware-minimal/README.md).
 
+## Environment and API Keys
+
+Skills that benefit from external credentials now declare them in `SKILL.md` frontmatter under `requires.env`.
+
+Suggested shared variables:
+
+| Variable | Used By | Required | Purpose |
+| --- | --- | --- | --- |
+| `S2_API_KEY` | `literature-search`, `systematic-review`, `citation-management` | No | Higher Semantic Scholar rate limits |
+| `OPENALEX_EMAIL` | `literature-search`, `openalex-database` | No | OpenAlex polite-pool email |
+| `CROSSREF_EMAIL` | `literature-search` | No | Crossref User-Agent contact email |
+| `NCBI_API_KEY` | `pubmed-database` | No | Higher PubMed E-utilities rate limits |
+| `NCBI_EMAIL` | `pubmed-database` | No | Contact email for traceable PubMed automation |
+| `ZOTERO_LIBRARY_ID` | `pyzotero` | Yes | Zotero target library id |
+| `ZOTERO_API_KEY` | `pyzotero` | Yes | Zotero API key |
+| `ZOTERO_LIBRARY_TYPE` | `pyzotero` | Yes | Zotero library type |
+
+Copy [`.env.example`](.env.example) into your own local environment file or mirror these keys into your ResearchClaw env store.
+
 ## ResearchClaw
 
 This repository can be used as an external skills source for [ResearchClaw](https://github.com/ymx10086/ResearchClaw).
 
 When loading it there, treat this repository's [`skills/`](skills/) directory as the authoritative loadable skill set. The root README and skill catalog define routing rules, shared artifacts, and role boundaries.
+
+For ResearchClaw integration, the key contract is:
+
+- each skill exposes `requires.env` in `SKILL.md`
+- ResearchClaw should read that metadata from `/api/skills`
+- missing required or recommended variables should be surfaced before or immediately after enabling the skill
 
 ## Curation Rules
 

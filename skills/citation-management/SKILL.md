@@ -2,6 +2,12 @@
 name: citation-management
 description: Validate, generate, repair, and deduplicate BibTeX and cite keys for an existing paper draft or curated paper database. Use for bibliography hygiene and citation insertion, not for broad literature discovery or narrative synthesis.
 argument-hint: [tex-or-bib-file]
+requires:
+  env:
+    - name: S2_API_KEY
+      required: false
+      secret: true
+      description: Optional Semantic Scholar API key for higher rate limits in harvest_citations.py and explicit search steps.
 ---
 
 # Citation Management
@@ -33,6 +39,10 @@ Preferred shared flow:
 3. manuscript `.tex` validated against `references.bib`
 
 If you already have a curated corpus, generate BibTeX from it before searching for new papers again.
+
+## Optional Runtime Configuration
+
+- `S2_API_KEY`: used automatically by `harvest_citations.py` if `--api-key` is not passed
 
 ## Non-Negotiable Rule
 

@@ -1,6 +1,20 @@
 ---
 name: pyzotero
 description: Programmatic Zotero library automation for exporting, syncing, tagging, and attaching references. Use for reference-library operations and BibTeX export, not for paper discovery or narrative synthesis.
+requires:
+  env:
+    - name: ZOTERO_LIBRARY_ID
+      required: true
+      secret: false
+      description: Zotero user or group library id.
+    - name: ZOTERO_API_KEY
+      required: true
+      secret: true
+      description: Zotero API key with access to the target library.
+    - name: ZOTERO_LIBRARY_TYPE
+      required: true
+      secret: false
+      description: Zotero library type, usually user or group.
 allowed-tools: Read Write Edit Bash
 license: MIT License
 metadata:

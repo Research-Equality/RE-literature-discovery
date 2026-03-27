@@ -2,6 +2,12 @@
 name: systematic-review
 description: Run an end-to-end systematic literature review pipeline from search to compiled report while writing durable artifacts under outputs/{topic-slug}/. Use when the user wants a managed review workspace, not only quick discovery or a single written section.
 argument-hint: [topic]
+requires:
+  env:
+    - name: S2_API_KEY
+      required: false
+      secret: true
+      description: Optional Semantic Scholar API key for higher rate limits during phase-2 search and citation expansion.
 ---
 
 # Systematic Review
@@ -43,6 +49,10 @@ Recommended sequence inside Phase 2:
 - `outputs/{topic-slug}/analysis/evidence_summary.md`
 - `outputs/{topic-slug}/phase5_synthesis/`
 - `outputs/{topic-slug}/phase6_report/references.bib`
+
+## Optional Runtime Configuration
+
+- `S2_API_KEY`: used automatically by `search_semantic_scholar.py` if `--api-key` is not passed
 
 ## Phase Gate
 

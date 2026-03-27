@@ -1,6 +1,16 @@
 ---
 name: pubmed-database
 description: Advanced PubMed / MEDLINE query construction and E-utilities workflows for biomedical literature. Use for PubMed-specific search strategy, MeSH, PMID/DOI retrieval, and systematic biomedical searches. Do not use this as a general writing or bibliography-cleanup skill.
+requires:
+  env:
+    - name: NCBI_API_KEY
+      required: false
+      secret: true
+      description: Optional NCBI E-utilities API key for higher PubMed request limits.
+    - name: NCBI_EMAIL
+      required: false
+      secret: false
+      description: Optional contact email for traceable PubMed automation workflows.
 license: Unknown
 metadata:
     skill-author: K-Dense Inc.
@@ -50,6 +60,11 @@ When PubMed search results are part of a larger repository workflow, preserve at
 - source = `pubmed`
 
 Then add those records to the shared corpus or convert them into `references.bib` for `citation-management`.
+
+## Optional Runtime Configuration
+
+- `NCBI_API_KEY`: increases E-utilities rate limits
+- `NCBI_EMAIL`: recommended for traceable biomedical automation
 
 ## Core Capabilities
 

@@ -54,32 +54,43 @@ Frontier paper 不允许写成 established consensus。
 
 ## 当前收录
 
+推荐星级说明：
+- `5/5`：默认优先使用，或对大多数文献调研流程都关键
+- `4/5`：强力配套，常用
+- `3/5`：偏专用，按需使用
+
 ### 发现与主工作流
 
-- `literature-search`
-- `evidence-grading`
-- `literature-review`
-- `systematic-review`
-- `related-work-writing`
-- `survey-generation`
+| Skill | 功能 | 参考仓库 | 推荐星级 |
+| --- | --- | --- | --- |
+| `literature-search` | 默认检索入口，负责 search、merge、dedup 和 early triage | `agent-research-skills` | `5/5` |
+| `evidence-grading` | 评估证据强度，不把 venue prestige 直接当作 evidence | `PaperClaw` | `5/5` |
+| `literature-review` | 把排序后的语料整理成主题化综述，并内置常见分析模式 | `agent-research-skills` | `5/5` |
+| `systematic-review` | 运行从检索到报告编译的完整系统化综述工作区 | `agent-research-skills + AI-research-SKILLs` | `5/5` |
+| `related-work-writing` | 按 bucket-aware 规则生成单篇论文的 Related Work | `agent-research-skills + AI-research-SKILLs` | `4/5` |
+| `survey-generation` | 从 canonical corpus 规划并生成完整 survey manuscript | `agent-research-skills + AI-research-SKILLs` | `4/5` |
 
 ### 权威性与排序
 
-- `venue-authority-resolver`
-- `authority-ranking`
-- `ccf-ranking`
-- `journal-metrics`
-- `paper-quality-filter`
-- `field-ranking-profile`
+| Skill | 功能 | 参考仓库 | 推荐星级 |
+| --- | --- | --- | --- |
+| `venue-authority-resolver` | 统一 venue metadata，并补 authority provenance | `repository-native` | `5/5` |
+| `authority-ranking` | 计算仓库唯一 canonical 的 `final_score` 与 `selection_bucket` | `repository-native` | `5/5` |
+| `ccf-ranking` | 为 CS / AI / security venue 提供可审计的 CCF 解析 | `repository-native` | `5/5` |
+| `journal-metrics` | 用分层来源解析期刊分区和影响指标 | `repository-native` | `4/5` |
+| `paper-quality-filter` | 在最终排序前补质量标签与 caution flags | `repository-native` | `4/5` |
+| `field-ranking-profile` | 按学科切换 ranking 权重和阈值 | `repository-native` | `3/5` |
 
 ### 数据库与参考管理
 
-- `arxiv-database`
-- `biorxiv-database`
-- `openalex-database`
-- `pubmed-database`
-- `citation-management`
-- `pyzotero`
+| Skill | 功能 | 参考仓库 | 推荐星级 |
+| --- | --- | --- | --- |
+| `arxiv-database` | 执行 arXiv 定向检索与下载流程 | `claude-scientific-skills` | `4/5` |
+| `biorxiv-database` | 执行 bioRxiv 定向预印本检索 | `claude-scientific-skills` | `3/5` |
+| `openalex-database` | 查询 OpenAlex 的来源、作者和 citation metadata | `claude-scientific-skills` | `4/5` |
+| `pubmed-database` | 执行 PubMed / MEDLINE 定向生物医学检索 | `claude-scientific-skills` | `4/5` |
+| `citation-management` | 校验、修复并生成 BibTeX 与 cite key | `agent-research-skills + AI-research-SKILLs` | `4/5` |
+| `pyzotero` | 将整理后的语料与 Zotero 库同步和导出 | `claude-scientific-skills` | `3/5` |
 
 ## 内嵌分析模式
 
@@ -130,11 +141,36 @@ Frontier paper 不允许写成 established consensus。
 
 见 [`examples/authority-aware-minimal/README.md`](examples/authority-aware-minimal/README.md)。
 
+## 环境变量与 API Key
+
+现在凡是依赖外部配置的 skill，都会在 `SKILL.md` frontmatter 的 `requires.env` 里声明。
+
+建议统一使用这些环境变量：
+
+| 变量 | 使用 Skill | 必需 | 用途 |
+| --- | --- | --- | --- |
+| `S2_API_KEY` | `literature-search`, `systematic-review`, `citation-management` | 否 | 提升 Semantic Scholar 限额 |
+| `OPENALEX_EMAIL` | `literature-search`, `openalex-database` | 否 | OpenAlex polite pool 邮箱 |
+| `CROSSREF_EMAIL` | `literature-search` | 否 | Crossref User-Agent 联系邮箱 |
+| `NCBI_API_KEY` | `pubmed-database` | 否 | 提升 PubMed E-utilities 限额 |
+| `NCBI_EMAIL` | `pubmed-database` | 否 | PubMed 自动化联系邮箱 |
+| `ZOTERO_LIBRARY_ID` | `pyzotero` | 是 | Zotero 目标库 ID |
+| `ZOTERO_API_KEY` | `pyzotero` | 是 | Zotero API Key |
+| `ZOTERO_LIBRARY_TYPE` | `pyzotero` | 是 | Zotero 库类型 |
+
+可以把 [`.env.example`](.env.example) 复制成你自己的本地环境文件，或者把这些键直接写进 ResearchClaw 的 env store。
+
 ## ResearchClaw 兼容性
 
 这个仓库可以作为 [ResearchClaw](https://github.com/ymx10086/ResearchClaw) 的外部 skills 来源。
 
 在 ResearchClaw 中使用时，应把本仓库的 [`skills/`](skills/) 目录视为权威可加载 skill 集合；根 README 和 skills catalog 负责说明路由规则、共享产物与边界。
+
+和 ResearchClaw 对接时，关键契约是：
+
+- 每个 skill 在 `SKILL.md` 里通过 `requires.env` 声明所需配置
+- ResearchClaw 从 `/api/skills` 读取这些元数据
+- 缺失的必需或推荐变量，应在启用 skill 前后明确提示出来
 
 ## 收录原则
 

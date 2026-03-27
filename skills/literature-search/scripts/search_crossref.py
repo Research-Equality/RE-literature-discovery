@@ -14,6 +14,7 @@ Usage:
 
 import argparse
 import json
+import os
 import re
 import sys
 import unicodedata
@@ -30,7 +31,6 @@ if str(AUTHORITY_SCRIPTS) not in sys.path:
 from shared_schema import normalize_paper
 
 CROSSREF_URL = "https://api.crossref.org/works"
-HEADERS = {"User-Agent": "SkillScript/1.0 (mailto:user@example.com)"}
 
 TYPE_MAPPING = {
     "journal-article": "article",
@@ -199,7 +199,11 @@ def query_crossref(query: str, rows: int = 10, timeout: int = 30) -> list[dict]:
     """Query CrossRef API and return raw items."""
     params = urllib.parse.urlencode({"query": query, "rows": rows})
     url = f"{CROSSREF_URL}?{params}"
-    req = urllib.request.Request(url, headers=HEADERS)
+    email = os.getenv("CROSSREF_EMAIL", "")
+    user_agent = "SkillScript/1.0"
+    if email:
+        user_agent += f" (mailto:{email})"
+    req = urllib.request.Request(url, headers={"User-Agent": user_agent})
 
     for attempt in range(3):
         try:

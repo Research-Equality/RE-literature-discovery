@@ -2,6 +2,20 @@
 name: literature-search
 description: Default discovery skill for academic search, merge, deduplication, and early triage. Use it to build a reusable paper corpus from search results, then hand the corpus to the authority-aware ranking layer. Do not use it as the final ranking or writing stage.
 argument-hint: [search-query]
+requires:
+  env:
+    - name: S2_API_KEY
+      required: false
+      secret: true
+      description: Optional Semantic Scholar API key for higher rate limits when literature-search delegates to search_semantic_scholar.py.
+    - name: OPENALEX_EMAIL
+      required: false
+      secret: false
+      description: Optional email used for OpenAlex polite-pool requests in search_openalex.py.
+    - name: CROSSREF_EMAIL
+      required: false
+      secret: false
+      description: Optional email embedded in the Crossref User-Agent for traceable, polite API access.
 ---
 
 # Literature Search
@@ -26,6 +40,12 @@ This skill no longer owns final ranking logic. `authority-ranking` is the only l
 - initial authority-ranked `outputs/<topic-slug>/paper_db.jsonl`
 
 After `evidence-grading`, re-run `authority-ranking` to refresh the canonical `paper_db.jsonl`.
+
+## Optional Runtime Configuration
+
+- `S2_API_KEY`: raises Semantic Scholar rate limits for the common discovery path
+- `OPENALEX_EMAIL`: enables OpenAlex polite pool
+- `CROSSREF_EMAIL`: replaces the placeholder Crossref mailto value
 
 ## Recommended Flow
 

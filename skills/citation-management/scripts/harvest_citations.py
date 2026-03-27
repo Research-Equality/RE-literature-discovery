@@ -171,6 +171,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Only show claims, don't search")
     parser.add_argument("--verbose", action="store_true", help="Print detailed progress")
     args = parser.parse_args()
+    api_key = args.api_key or os.getenv("S2_API_KEY", "")
 
     with open(args.tex, encoding="utf-8", errors="replace") as f:
         tex_content = f.read()
@@ -203,7 +204,7 @@ def main():
 
     for i, claim in enumerate(claims[:rounds]):
         print(f"\n[{i+1}/{rounds}] Searching for: {claim['query'][:60]}...", file=sys.stderr)
-        papers = search_semantic_scholar(claim["query"], limit=3, api_key=args.api_key)
+        papers = search_semantic_scholar(claim["query"], limit=3, api_key=api_key)
         time.sleep(1)  # Rate limiting
 
         if not papers:
