@@ -112,6 +112,12 @@ python skills/systematic-review/scripts/search_semantic_scholar.py \
 
 系统化综述产物默认建议写入 `outputs/<topic-slug>/`，避免污染技能目录本身。
 
+## ResearchClaw 兼容性
+
+这个仓库也可以作为 [ResearchClaw](https://github.com/ymx10086/ResearchClaw) 的外部 skills 来源来加载。
+
+在 ResearchClaw 中使用时，应以本仓库的 [`skills/`](skills/) 目录作为实际加载的权威 skill 集合；根目录 README 和技能目录索引负责说明各 skill 的分工、共享产物约定和边界关系。
+
 ## 收录原则
 
 - 必须直接服务于文献发现、阅读、综述、引用或 related work 写作

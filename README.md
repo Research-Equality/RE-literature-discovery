@@ -112,6 +112,12 @@ Recommended environment:
 
 Systematic review outputs are recommended to live under `outputs/<topic-slug>/` so the skill directories remain clean.
 
+## ResearchClaw
+
+This repository can also be used as an external skills source for [ResearchClaw](https://github.com/ymx10086/ResearchClaw).
+
+When loading it there, treat this repository's [`skills/`](skills/) directory as the authoritative loadable skill set. The root README and skill catalog define the routing rules, shared artifacts, and role boundaries between skills.
+
 ## Curation Rules
 
 - A skill must directly support literature discovery, reading, synthesis, citation work, or related work writing
