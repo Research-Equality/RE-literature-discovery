@@ -17,7 +17,7 @@ Core command:
 
 ```bash
 python skills/authority-ranking/scripts/rank_papers.py \
-  --input outputs/<topic-slug>/paper_db.authority.jsonl \
+  --input outputs/<topic-slug>/paper_db.evidence.jsonl \
   --output outputs/<topic-slug>/paper_db.jsonl \
   --query "QUERY" \
   --profile cs

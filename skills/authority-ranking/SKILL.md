@@ -20,8 +20,8 @@ This is the only final ranking layer in the repository.
 
 ## Inputs
 
-- authority-enriched `paper_db.authority.jsonl`
-- optional evidence-enriched corpus
+- rerank input such as `paper_db.evidence.jsonl`
+- or another authority-prepared corpus in standalone usage
 
 ## Outputs
 
@@ -33,7 +33,7 @@ This is the only final ranking layer in the repository.
 
 ```bash
 python skills/authority-ranking/scripts/rank_papers.py \
-  --input outputs/<topic-slug>/paper_db.authority.jsonl \
+  --input outputs/<topic-slug>/paper_db.evidence.jsonl \
   --output outputs/<topic-slug>/paper_db.jsonl \
   --query "QUERY" \
   --profile cs
@@ -43,6 +43,6 @@ If `evidence_score` is missing, the script uses the profile fallback. Re-run it 
 
 ## Related Skills
 
-- Upstream: [literature-search](../literature-search/), [venue-authority-resolver](../venue-authority-resolver/), [paper-quality-filter](../paper-quality-filter/), [field-ranking-profile](../field-ranking-profile/)
+- Upstream: [literature-search](../literature-search/), [venue-authority-resolver](../venue-authority-resolver/), [paper-quality-filter](../paper-quality-filter/), [evidence-grading](../evidence-grading/), [field-ranking-profile](../field-ranking-profile/)
 - Metadata companions: [ccf-ranking](../ccf-ranking/), [journal-metrics](../journal-metrics/)
 - Downstream: [literature-review](../literature-review/), [systematic-review](../systematic-review/), [related-work-writing](../related-work-writing/), [survey-generation](../survey-generation/)
