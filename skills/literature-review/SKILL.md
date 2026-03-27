@@ -1,6 +1,6 @@
 ---
 name: literature-review
-description: Conduct comprehensive literature reviews using multi-perspective dialogue simulation. Generate diverse expert personas, conduct grounded Q&A conversations, and synthesize findings into structured knowledge. Use when starting a new research project or writing a survey section.
+description: Synthesize an already collected paper set into a focused literature review using multi-perspective dialogue and grounded note consolidation. Use for thematic review writing and gap analysis after discovery, not for raw search-only tasks or full survey-manuscript generation.
 argument-hint: [topic]
 ---
 
@@ -9,6 +9,35 @@ argument-hint: [topic]
 Conduct deep literature reviews through multi-perspective dialogue and systematic search.
 
 Command examples assume you are running from the repository root.
+
+## Repository Role
+
+This skill sits between discovery and final writing.
+
+- Upstream input is usually `paper_db.jsonl` from `literature-search` or `systematic-review`
+- Its job is synthesis, not exhaustive search orchestration
+- Its outputs should be reusable by `related-work-writing` and `survey-generation`
+
+## Do Not Use This Skill For
+
+- first-pass broad paper discovery across databases
+- bibliography cleanup or cite-key repair
+- writing a full survey manuscript from start to finish
+
+## Shared Inputs and Outputs
+
+Preferred inputs:
+
+- `outputs/<topic-slug>/paper_db.jsonl`
+- source notes or search-result summaries
+- optional `references.bib`
+
+Preferred outputs:
+
+- `outputs/<topic-slug>/review/review_outline.md`
+- `outputs/<topic-slug>/review/review.md`
+- `outputs/<topic-slug>/review/evidence_table.md`
+- `outputs/<topic-slug>/review/gaps.md`
 
 ## Input
 
@@ -24,13 +53,13 @@ Command examples assume you are running from the repository root.
 
 ```bash
 # Search Semantic Scholar
-python skills/deep-research/scripts/search_semantic_scholar.py --query "topic" --max-results 20
+python skills/systematic-review/scripts/search_semantic_scholar.py --query "topic" --max-results 20
 
 # Search OpenAlex
 python skills/literature-search/scripts/search_openalex.py --query "topic" --max-results 20
 
 # Search arXiv
-python skills/deep-research/scripts/search_arxiv.py --query "topic" --max-results 10
+python skills/systematic-review/scripts/search_arxiv.py --query "topic" --max-results 10
 ```
 
 ## Workflow
@@ -64,11 +93,11 @@ For each persona, simulate a multi-turn Q&A conversation:
 
 ## Output
 
-A structured literature review with:
-1. **Outline** — Hierarchical topic structure
-2. **Per-section summaries** — Each grounded in retrieved papers
-3. **Paper database** — Structured entries for all reviewed papers
-4. **Knowledge gaps** — Identified areas needing further investigation
+A structured literature review bundle:
+1. **Outline** — `outputs/<topic-slug>/review/review_outline.md`
+2. **Review draft** — `outputs/<topic-slug>/review/review.md`
+3. **Evidence table** — `outputs/<topic-slug>/review/evidence_table.md`
+4. **Knowledge gaps** — `outputs/<topic-slug>/review/gaps.md`
 
 ## Rules
 
@@ -79,6 +108,6 @@ A structured literature review with:
 - Use inline citations: "Smith et al. [1] propose..."
 
 ## Related Skills
-- Upstream: [literature-search](../literature-search/), [deep-research](../deep-research/)
-- Downstream: [related-work-writing](../related-work-writing/)
-- See also: [survey-generation](../survey-generation/)
+- Upstream: [literature-search](../literature-search/), [systematic-review](../systematic-review/)
+- Downstream: [related-work-writing](../related-work-writing/), [survey-generation](../survey-generation/)
+- Analysis companions: [cross-paper-synthesis](../cross-paper-synthesis/), [consensus-mapping](../consensus-mapping/), [contradiction-detection](../contradiction-detection/), [evidence-grading](../evidence-grading/), [gap-detection](../gap-detection/)

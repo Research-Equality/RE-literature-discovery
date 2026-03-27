@@ -1,6 +1,6 @@
 ---
 name: related-work-writing
-description: Write Related Work sections that compare and contrast prior work with your approach. Organize by theme, cite broadly, and explain how your work differs. Use when writing or improving the Related Work section of a paper.
+description: Write or revise the Related Work section of a specific paper from an existing corpus, notes, and bibliography. Use for positioning one contribution against prior work, not for initial discovery, full literature review synthesis, or full survey generation.
 argument-hint: [paper-draft]
 ---
 
@@ -9,6 +9,32 @@ argument-hint: [paper-draft]
 Generate publication-quality Related Work sections with proper citations and thematic organization.
 
 Command examples assume you are running from the repository root.
+
+## Repository Role
+
+This skill is a narrow writing-stage skill.
+
+- It assumes discovery and synthesis have already happened
+- It should consume `review.md`, `phase5_synthesis/synthesis.md`, or similar curated notes
+- It should output one section, not a full survey manuscript
+
+## Do Not Use This Skill For
+
+- collecting papers from scratch
+- fixing bibliography inconsistencies
+- generating an entire survey paper
+
+## Shared Inputs and Outputs
+
+Preferred inputs:
+
+- current paper draft
+- `outputs/<topic-slug>/review/review.md` or `outputs/<topic-slug>/phase5_synthesis/synthesis.md`
+- `references.bib`
+
+Preferred output:
+
+- `outputs/<topic-slug>/writing/related_work.md`
 
 ## Input
 
@@ -44,6 +70,7 @@ For each thematic group:
 - Check that your work's novelty is clear from the comparisons
 - Verify all `\cite{}` keys exist in the `.bib` file
 - Aim for 1-2 pages (single column) or 0.5-1 page (double column)
+- If a citation cannot be verified, keep an explicit placeholder and resolve it through `citation-management` rather than inventing a reference
 
 ## Rules
 
@@ -56,5 +83,6 @@ For each thematic group:
 - **End with positioning** — The final paragraph should clearly position your work relative to all discussed prior work
 
 ## Related Skills
-- Upstream: [literature-search](../literature-search/), [literature-review](../literature-review/), [citation-management](../citation-management/)
+- Upstream: [literature-review](../literature-review/), [systematic-review](../systematic-review/), [citation-management](../citation-management/)
+- Analysis companions: [cross-paper-synthesis](../cross-paper-synthesis/), [consensus-mapping](../consensus-mapping/), [contradiction-detection](../contradiction-detection/), [evidence-grading](../evidence-grading/), [gap-detection](../gap-detection/)
 - See also: [survey-generation](../survey-generation/)

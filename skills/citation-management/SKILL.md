@@ -1,6 +1,6 @@
 ---
 name: citation-management
-description: Manage BibTeX citations for LaTeX papers. Harvest missing citations from a draft using Semantic Scholar, validate cite keys against .bib files, deduplicate entries, and format bibliography. Use when working with references, BibTeX, or citations.
+description: Validate, generate, repair, and deduplicate BibTeX and cite keys for an existing paper draft or curated paper database. Use for bibliography hygiene and citation insertion, not for broad literature discovery or narrative synthesis.
 argument-hint: [tex-or-bib-file]
 ---
 
@@ -9,6 +9,41 @@ argument-hint: [tex-or-bib-file]
 Manage the full lifecycle of citations in a LaTeX paper.
 
 Command examples assume you are running from the repository root.
+
+## Repository Role
+
+This skill is the bibliography contract layer for the repository.
+
+- It consumes a curated paper set, draft `.tex`, or existing `.bib`
+- It does not replace discovery or synthesis skills
+- It is the final gate before manuscript compilation
+
+## Do Not Use This Skill For
+
+- broad paper discovery across databases
+- thematic literature synthesis
+- writing Related Work or survey prose
+
+## Shared Inputs and Outputs
+
+Preferred shared flow:
+
+1. `paper_db.jsonl` from `literature-search` or `systematic-review`
+2. `references.bib` generated or repaired here
+3. manuscript `.tex` validated against `references.bib`
+
+If you already have a curated corpus, generate BibTeX from it before searching for new papers again.
+
+## Non-Negotiable Rule
+
+Never generate BibTeX from memory.
+
+- search first
+- verify existence in programmatic metadata sources
+- fetch BibTeX from a verified identifier when possible
+- only then add the citation
+
+If a citation cannot be verified, keep an explicit placeholder rather than inventing a reference.
 
 ## Input
 
@@ -27,16 +62,19 @@ Reports: missing citations, unused bib entries, duplicate keys, duplicate sectio
 
 ### Generate BibTeX from paper database
 ```bash
-python skills/deep-research/scripts/bibtex_manager.py \
+python skills/systematic-review/scripts/bibtex_manager.py \
   --jsonl paper_db.jsonl --output references.bib
 ```
 
 ### Search for a specific paper to add
 ```bash
-python skills/deep-research/scripts/search_semantic_scholar.py \
+python skills/systematic-review/scripts/search_semantic_scholar.py \
   --query "attention is all you need" --max-results 5 \
   --api-key "$S2_API_KEY"
 ```
+
+### Retrieve BibTeX from verified DOI
+Use DOI content negotiation or another verified metadata source rather than hand-writing BibTeX entries.
 
 ### Harvest missing citations automatically
 ```bash
@@ -92,6 +130,10 @@ BibTeX key format: `firstAuthorLastNameYearFirstContentWord` (e.g., `vaswani2017
 - Protect proper nouns with `{Braces}` in titles
 - Ensure required fields per entry type
 
+## References
+
+- `references/citation-verification.md` — repository-standard citation verification workflow and placeholder policy
+
 ## Related Skills
-- Upstream: [literature-search](../literature-search/), [deep-research](../deep-research/)
+- Upstream: [literature-search](../literature-search/), [systematic-review](../systematic-review/), [pyzotero](../pyzotero/)
 - Downstream: [related-work-writing](../related-work-writing/), [survey-generation](../survey-generation/)

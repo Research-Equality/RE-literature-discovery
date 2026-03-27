@@ -1,80 +1,138 @@
+[English](README.md) | [简体中文](README.zh.md)
+
 # RE-literature-discovery
 
-权威的文献调研与综述相关 Skills 仓库。
+An authoritative skills repository for literature discovery, evidence synthesis, and survey writing.
 
-这个仓库聚焦学术文献工作流中最核心的一条主链：检索、阅读、归纳、引用管理、Related Work 写作，以及完整 Survey 生成。它不是通用科研全流程工具箱，而是专门收录和维护所有与 literature discovery、literature review、survey writing 直接相关的技能。
+This repository focuses on the core academic literature workflow: search, reading, synthesis, citation management, database lookup, related work writing, and full survey generation. It is not a general end-to-end research toolkit. It is a curated home for skills directly related to literature discovery, literature review, and survey writing.
 
-## 定位
+## Positioning
 
-- 只保留文献调研、综述撰写、引用治理相关 skills
-- 统一整理为仓库内可移植的目录结构，不依赖某个作者的本地绝对路径
-- 作为后续新增相关 skills 的唯一权威入口
+- Keep only skills related to literature research, survey writing, citation work, and scholarly source discovery
+- Normalize everything into a portable repository layout without depending on one author's local machine
+- Serve as the authoritative home for future literature-review-related skills
 
-## 当前收录
+## Included Skills
 
-主链技能位于 [`skills/`](skills/)：
+The skill collection lives under [`skills/`](skills/).
 
-- `literature-search`: 多源学术检索，生成结构化 JSONL/BibTeX
-- `literature-review`: 多视角文献综述与知识归纳
-- `deep-research`: 六阶段系统化文献调研流水线
-- `citation-management`: BibTeX 采集、校验、去重、补全
-- `related-work-writing`: 论文 Related Work 写作
-- `survey-generation`: 完整综述论文生成
+### Workflow Skills
 
-技能目录说明见 [`skills/README.md`](skills/README.md)。
+- `literature-search`: multi-source academic search with structured JSONL and BibTeX output
+- `literature-review`: multi-perspective review and knowledge synthesis
+- `systematic-review`: a six-phase systematic literature review pipeline
+- `citation-management`: BibTeX harvesting, validation, deduplication, and repair
+- `related-work-writing`: Related Work writing workflows
+- `survey-generation`: full survey paper generation
 
-## 仓库结构
+### Database and Reference Skills
+
+- `arxiv-database`: arXiv preprint search and PDF retrieval
+- `biorxiv-database`: bioRxiv preprint search for life-science literature
+- `openalex-database`: OpenAlex queries for scholarly search and bibliometrics
+- `pubmed-database`: direct PubMed query construction and E-utilities workflows
+- `pyzotero`: Zotero library automation and reference management integration
+
+### Monitoring and Analysis Skills
+
+- `arxiv-monitor`: recurring arXiv surveillance and digest generation
+- `citation-graph`: citation-network analysis for foundational and bridge papers
+- `gap-detection`: open-question and novelty-opportunity analysis
+- `claim-tracker`: claim-level provenance and status tracking
+- `consensus-mapping`: mapping settled versus contested claims
+- `contradiction-detection`: identifying and structuring conflicting findings
+- `cross-paper-synthesis`: comparison tables, timelines, and through-line synthesis
+- `evidence-grading`: grading claim and paper strength for calibrated writing
+
+See [`skills/README.md`](skills/README.md) for the skill catalog.
+
+## Skill Routing
+
+To avoid overlap, the repository uses a layered workflow:
+
+- `literature-search` is the default entry point for multi-source paper discovery
+- `arxiv-database`, `biorxiv-database`, `openalex-database`, and `pubmed-database` are source-specific companions for advanced database tasks
+- `arxiv-monitor` is the recurring watch layer after topic definition
+- `systematic-review` is the end-to-end systematic review pipeline
+- `literature-review` is the synthesis layer for an already collected corpus
+- `citation-graph`, `gap-detection`, `claim-tracker`, `consensus-mapping`, `contradiction-detection`, `cross-paper-synthesis`, and `evidence-grading` are corpus-analysis companions
+- `citation-management` and `pyzotero` are bibliography and library-management utilities
+- `related-work-writing` writes one paper section
+- `survey-generation` writes a full survey manuscript
+
+Shared artifact conventions:
+
+- `outputs/<topic-slug>/search_results/*.jsonl` for raw retrieval results
+- `outputs/<topic-slug>/paper_db.jsonl` for the shared paper corpus
+- `outputs/<topic-slug>/research_log.md` and `outputs/<topic-slug>/findings.md` for long-running review state
+- `references.bib` for the active bibliography
+- `outputs/<topic-slug>/review/`, `outputs/<topic-slug>/phase*/`, and `outputs/<topic-slug>/survey/` for downstream writing artifacts
+
+## Repository Layout
 
 ```text
 skills/
+  arxiv-monitor/
+  arxiv-database/
+  biorxiv-database/
+  citation-graph/
+  claim-tracker/
+  consensus-mapping/
+  contradiction-detection/
+  cross-paper-synthesis/
+  openalex-database/
+  pubmed-database/
+  pyzotero/
+  evidence-grading/
+  gap-detection/
   literature-search/
   literature-review/
-  deep-research/
+  systematic-review/
   citation-management/
   related-work-writing/
   survey-generation/
 ```
 
-## 使用约定
+## Usage
 
-命令示例默认从仓库根目录执行。
+Command examples assume you run them from the repository root.
 
 ```bash
-python skills/deep-research/scripts/search_semantic_scholar.py \
+python skills/systematic-review/scripts/search_semantic_scholar.py \
   --query "long-context reasoning agents" \
   --max-results 20 \
   --api-key "$S2_API_KEY"
 ```
 
-推荐环境：
+Recommended environment:
 
 - Python 3.10+
-- 可选环境变量：`S2_API_KEY`
-- 可选依赖：`PyMuPDF`（PDF 提取）
+- Optional environment variable: `S2_API_KEY`
+- Optional dependency: `PyMuPDF` for PDF extraction
 
-深度调研产物默认建议写入 `outputs/<topic-slug>/`，避免污染技能目录本身。
+Systematic review outputs are recommended to live under `outputs/<topic-slug>/` so the skill directories remain clean.
 
-## ResearchClaw 一键加载
+## Curation Rules
 
-为了兼容 `ResearchClaw` 的 GitHub 一键安装流程，仓库根目录现在额外提供了：
+- A skill must directly support literature discovery, reading, synthesis, citation work, or related work writing
+- Skills for experiments, code implementation, paper formatting, or presentation should not live here
+- Prefer skills that are scriptable, reusable, and auditable
 
-- [`SKILL.md`](SKILL.md)：仓库级入口 skill
-- [`references/`](references/)：给一键安装后的根 skill 使用的镜像参考资料
-- [`scripts/`](scripts/)：给一键安装后的根 skill 使用的镜像脚本
+## Provenance
 
-也就是说：
+The current skill set was curated and refactored from four local source snapshots:
 
-- 本地/仓库内的权威技能目录仍然是 [`skills/`](skills/)
-- `ResearchClaw` 如果直接从仓库 GitHub URL 安装，会命中根目录 [`SKILL.md`](SKILL.md)，并拿到可执行的 `scripts/` 与可读的 `references/`
+- `agent-research-skills/`: workflow-oriented academic research skills
+- `claude-scientific-skills/`: scientific database, citation, and scholarly tooling skills
+- `PaperClaw/`: literature monitoring and corpus-analysis skills for research teams
+- `AI-research-SKILLs/`: AI research orchestration and paper-writing skills
 
-这个兼容层是为了让“整个仓库”可以被一键加载，不改变 `skills/` 作为权威来源的定位。
+Only literature-review-related skills are retained. Overlapping capabilities were merged into the existing mainline skills instead of duplicated one-to-one. The normalized authoritative version is the one under [`skills/`](skills/).
 
-## 收录原则
+Examples of merged overlaps:
 
-- 必须直接服务于文献发现、阅读、综述、引用或 related work 写作
-- 不收录与实验、代码实现、投稿排版、答辩汇报等主线无关的 skills
-- 优先保留可脚本化、可复用、可审计的能力
-
-## 来源
-
-当前技能集主要由本地 `agent-research-skills/` 来源快照中的相关技能筛选和重构而来。规范化后的权威版本以 [`skills/`](skills/) 为准。
+- `PaperClaw/living-review` -> covered by `literature-review` plus `systematic-review`
+- `PaperClaw/semantic-scholar` -> covered by `literature-search` and `systematic-review` search tooling
+- `PaperClaw/zotero-integration` -> covered by `pyzotero` plus `citation-management`
+- `AI-research-SKILLs/autoresearch` -> distilled into `systematic-review` workspace discipline and resumable review templates
+- `AI-research-SKILLs/ml-paper-writing` -> distilled into `citation-management`, `related-work-writing`, and `survey-generation` citation-verification rules

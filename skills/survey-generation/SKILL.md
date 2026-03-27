@@ -1,6 +1,6 @@
 ---
 name: survey-generation
-description: Generate complete academic survey papers using multi-LLM parallel outline generation, RAG-based subsection writing, citation validation, and local coherence enhancement. Based on AutoSurvey pipeline. Use for writing comprehensive literature surveys.
+description: Generate a full survey manuscript from a curated corpus, outline, and synthesis notes. Use when the deliverable is an end-to-end survey paper, not just a Related Work section, quick review, or citation cleanup.
 argument-hint: [topic]
 ---
 
@@ -10,6 +10,32 @@ Generate complete academic survey papers with structured outline, RAG-based writ
 
 Command examples assume you are running from the repository root.
 
+## Repository Role
+
+This is the final manuscript-generation skill in the repository.
+
+- Prefer `systematic-review` as the upstream producer of the corpus and synthesis notes
+- `literature-review` can also act as a lighter upstream input
+- `citation-management` should be used before finalizing the manuscript
+
+## Do Not Use This Skill For
+
+- first-pass paper discovery
+- bibliography-only repair
+- writing only a single Related Work section
+
+## Shared Inputs and Outputs
+
+Preferred inputs:
+
+- `outputs/<topic-slug>/paper_db.jsonl`
+- `outputs/<topic-slug>/phase5_synthesis/synthesis.md` or `outputs/<topic-slug>/review/review.md`
+- optional `references.bib`
+
+Preferred output root:
+
+- `outputs/<topic-slug>/survey/`
+
 ## Input
 
 - `$0` — Survey topic or research area
@@ -18,7 +44,7 @@ Command examples assume you are running from the repository root.
 
 ### Literature search
 ```bash
-python skills/deep-research/scripts/search_semantic_scholar.py \
+python skills/systematic-review/scripts/search_semantic_scholar.py \
   --query "relevant search query" --max-results 50
 ```
 
@@ -64,11 +90,12 @@ For each subsection:
 1. Replace `[paper_title]` with `\cite{key}`
 2. Generate BibTeX entries for all cited papers
 3. Validate all citation keys exist in .bib file
+4. If any paper cannot be verified, keep an explicit placeholder and resolve it before final output
 
 ## Output Structure
 
 ```
-survey/
+outputs/<topic-slug>/survey/
 ├── main.tex          # Complete survey paper
 ├── references.bib    # All citations
 ├── outline.json      # Survey outline
@@ -81,9 +108,12 @@ survey/
 - Each subsection must meet minimum word count
 - No duplicate subsections across sections
 - Citation validation is mandatory before final output
+- If a citation cannot be verified programmatically, keep a visible placeholder instead of fabricating a BibTeX entry
 - Local coherence enhancement must preserve all citations
 - The survey should be comprehensive and logically organized
 
 ## Related Skills
-- Upstream: [deep-research](../deep-research/), [literature-search](../literature-search/), [literature-review](../literature-review/)
+- Upstream: [systematic-review](../systematic-review/), [literature-review](../literature-review/), [literature-search](../literature-search/)
+- Analysis companions: [cross-paper-synthesis](../cross-paper-synthesis/), [consensus-mapping](../consensus-mapping/), [contradiction-detection](../contradiction-detection/), [evidence-grading](../evidence-grading/), [gap-detection](../gap-detection/)
+- Final validation: [citation-management](../citation-management/)
 - See also: [related-work-writing](../related-work-writing/)

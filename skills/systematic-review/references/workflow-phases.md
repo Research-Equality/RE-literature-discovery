@@ -29,7 +29,7 @@ Objective: build a curated database of 35-80 papers spanning foundational and re
 Typical commands:
 
 ```bash
-python skills/deep-research/scripts/search_semantic_scholar.py \
+python skills/systematic-review/scripts/search_semantic_scholar.py \
   --query "TOPIC" \
   --max-results 50 \
   --year-range 2020-2026 \
@@ -47,13 +47,13 @@ python skills/literature-search/scripts/search_openalex.py \
 Then:
 
 ```bash
-python skills/deep-research/scripts/paper_db.py merge \
+python skills/systematic-review/scripts/paper_db.py merge \
   --inputs outputs/{slug}/phase1_frontier/search_results/s2_frontier.jsonl \
   outputs/{slug}/phase2_survey/search_results/s2.jsonl \
   outputs/{slug}/phase2_survey/search_results/openalex.jsonl \
   --output outputs/{slug}/paper_db.jsonl
 
-python skills/deep-research/scripts/paper_db.py filter \
+python skills/systematic-review/scripts/paper_db.py filter \
   --input outputs/{slug}/paper_db.jsonl \
   --output outputs/{slug}/paper_db.jsonl \
   --min-score 0.80 \
@@ -77,13 +77,13 @@ Selection criteria:
 Typical commands:
 
 ```bash
-python skills/deep-research/scripts/download_papers.py \
+python skills/systematic-review/scripts/download_papers.py \
   --jsonl outputs/{slug}/paper_db.jsonl \
   --output-dir outputs/{slug}/phase3_deep_dive/papers \
   --sort-by-citations \
   --max-downloads 15
 
-python skills/deep-research/scripts/extract_pdf.py \
+python skills/systematic-review/scripts/extract_pdf.py \
   --pdf-dir outputs/{slug}/phase3_deep_dive/papers \
   --output-dir outputs/{slug}/phase3_deep_dive/texts \
   --sections-only
@@ -142,11 +142,11 @@ Objective: compile the final report and bibliography.
 Typical commands:
 
 ```bash
-python skills/deep-research/scripts/bibtex_manager.py \
+python skills/systematic-review/scripts/bibtex_manager.py \
   --jsonl outputs/{slug}/paper_db.jsonl \
   --output outputs/{slug}/phase6_report/references.bib
 
-python skills/deep-research/scripts/compile_report.py \
+python skills/systematic-review/scripts/compile_report.py \
   --topic-dir outputs/{slug}/
 ```
 

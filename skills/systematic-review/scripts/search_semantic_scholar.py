@@ -86,7 +86,7 @@ def normalize_venue(venue: str) -> str:
 
 def s2_request(url: str, api_key: str | None = None) -> dict:
     """Make a request to the Semantic Scholar API with retry logic."""
-    headers = {"User-Agent": "deep-research/1.0"}
+    headers = {"User-Agent": "systematic-review/1.0"}
     if api_key:
         headers["x-api-key"] = api_key
 

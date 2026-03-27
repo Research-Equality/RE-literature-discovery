@@ -1,0 +1,25 @@
+topic: ""
+slug: ""
+status: bootstrap
+last_updated: ""
+
+review_question: ""
+scope_notes: ""
+
+corpus:
+  total_papers: 0
+  core_papers: 0
+  frontier_sources: []
+  main_db: outputs/<topic-slug>/paper_db.jsonl
+
+phase_status:
+  phase1_frontier: pending
+  phase2_survey: pending
+  phase3_deep_dive: pending
+  phase4_code: pending
+  phase5_synthesis: pending
+  phase6_compilation: pending
+
+active_themes: []
+open_questions: []
+next_actions: []

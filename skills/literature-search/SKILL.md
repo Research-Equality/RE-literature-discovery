@@ -1,6 +1,6 @@
 ---
 name: literature-search
-description: Search academic literature using Semantic Scholar, arXiv, and OpenAlex APIs. Returns structured JSONL with title, authors, year, venue, abstract, citations, and BibTeX. Use when the user needs to find papers, check related work, or build a bibliography.
+description: Default multi-source discovery skill for building an initial paper set across Semantic Scholar, arXiv, OpenAlex, and CrossRef. Produces normalized search results and bibliography candidates. Use for discovery and triage, not for full synthesis, systematic phase management, or final writing.
 argument-hint: [search-query]
 ---
 
@@ -10,6 +10,37 @@ Search multiple academic databases to find relevant papers.
 
 Command examples assume you are running from the repository root.
 
+## Repository Role
+
+This is the default entry point for discovery in this repository.
+
+- Use it first when the task is "find the important papers on X"
+- Use it to build or expand a reusable `paper_db.jsonl`
+- Prefer source-specific skills only when you need source-specific syntax or filters
+
+Prefer these alternatives when needed:
+- `arxiv-database`: advanced arXiv-only querying and PDF retrieval
+- `biorxiv-database`: bioRxiv-only preprint search
+- `openalex-database`: author / institution / citation / bibliometric analysis
+- `pubmed-database`: PubMed query design and biomedical systematic search
+- `systematic-review`: full end-to-end review pipeline after discovery
+
+## Do Not Use This Skill For
+
+- full multi-phase systematic review execution
+- bibliography validation or BibTeX cleanup
+- writing a Related Work section or a full survey manuscript
+
+## Shared Inputs and Outputs
+
+Preferred shared artifact layout:
+
+- Raw source results: `outputs/<topic-slug>/search_results/<source>.jsonl`
+- Merged corpus: `outputs/<topic-slug>/paper_db.jsonl`
+- Optional bibliography seed: `references.bib`
+
+If a source-specific skill outputs wrapped JSON instead of JSONL, normalize it before merging.
+
 ## Input
 
 - `$ARGUMENTS` — The search query (natural language)
@@ -18,7 +49,7 @@ Command examples assume you are running from the repository root.
 
 ### Semantic Scholar (primary — best for ML/AI, has BibTeX)
 ```bash
-python skills/deep-research/scripts/search_semantic_scholar.py \
+python skills/systematic-review/scripts/search_semantic_scholar.py \
   --query "QUERY" --max-results 20 --year-range 2022-2026 \
   --api-key "$S2_API_KEY" \
   -o results_s2.jsonl
@@ -28,7 +59,7 @@ Key flags: `--peer-reviewed-only`, `--top-conferences`, `--min-citations N`, `--
 
 ### arXiv (latest preprints)
 ```bash
-python skills/deep-research/scripts/search_arxiv.py \
+python skills/systematic-review/scripts/search_arxiv.py \
   --query "QUERY" --max-results 10 -o results_arxiv.jsonl
 ```
 
@@ -41,7 +72,7 @@ python skills/literature-search/scripts/search_openalex.py \
 
 ### Merge & Deduplicate
 ```bash
-python skills/deep-research/scripts/paper_db.py merge \
+python skills/systematic-review/scripts/paper_db.py merge \
   --inputs results_s2.jsonl results_arxiv.jsonl results_openalex.jsonl \
   --output merged.jsonl
 ```
@@ -64,8 +95,23 @@ Key flags: `--arxiv-id 1706.03762`, `--metadata`, `--max-results N`
 
 ### Generate BibTeX from results
 ```bash
-python skills/deep-research/scripts/bibtex_manager.py \
+python skills/systematic-review/scripts/bibtex_manager.py \
   --jsonl merged.jsonl --output references.bib
+```
+
+### Normalize source-specific search outputs into shared JSONL
+```bash
+python skills/literature-search/scripts/normalize_search_results.py \
+  --source arxiv-database \
+  --input raw_arxiv.json \
+  --output outputs/<topic-slug>/search_results/arxiv.jsonl
+```
+
+```bash
+python skills/literature-search/scripts/normalize_search_results.py \
+  --source biorxiv-database \
+  --input raw_biorxiv.json \
+  --output outputs/<topic-slug>/search_results/biorxiv.jsonl
 ```
 
 ## Workflow
@@ -89,5 +135,7 @@ python skills/deep-research/scripts/bibtex_manager.py \
 Present results as a table + detailed entries with BibTeX keys. Always note preprint status.
 
 ## Related Skills
-- Downstream: [citation-management](../citation-management/), [literature-review](../literature-review/), [related-work-writing](../related-work-writing/)
-- See also: [deep-research](../deep-research/), [survey-generation](../survey-generation/)
+- Downstream: [literature-review](../literature-review/), [systematic-review](../systematic-review/), [citation-management](../citation-management/)
+- See also: [related-work-writing](../related-work-writing/), [survey-generation](../survey-generation/)
+- Source-specific companions: [arxiv-database](../arxiv-database/), [biorxiv-database](../biorxiv-database/), [openalex-database](../openalex-database/), [pubmed-database](../pubmed-database/)
+- Monitoring and analysis companions: [arxiv-monitor](../arxiv-monitor/), [citation-graph](../citation-graph/)

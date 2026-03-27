@@ -54,7 +54,7 @@ def download_pdf(url: str, dest: str, timeout: int = 60) -> bool:
     part_path = dest + ".part"
 
     headers = {
-        "User-Agent": "deep-research/1.0 (academic research tool)",
+        "User-Agent": "systematic-review/1.0 (academic research tool)",
     }
     req = urllib.request.Request(url, headers=headers)
 

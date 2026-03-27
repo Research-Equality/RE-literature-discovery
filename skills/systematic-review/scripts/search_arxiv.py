@@ -55,7 +55,7 @@ def fetch_results(
         "sortOrder": sort_order,
     }
     url = f"{ARXIV_API}?{urllib.parse.urlencode(params)}"
-    req = urllib.request.Request(url, headers={"User-Agent": "deep-research/1.0"})
+    req = urllib.request.Request(url, headers={"User-Agent": "systematic-review/1.0"})
     with urllib.request.urlopen(req, timeout=30) as resp:
         return resp.read()
 
